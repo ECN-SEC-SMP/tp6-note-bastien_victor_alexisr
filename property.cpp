@@ -1,4 +1,4 @@
-#include "property.h"
+#include "property.hpp"
 
 // Constructeur
 Property::Property(std::string _name, int _price) : name(_name), rent(_price), owner(nullptr) {}

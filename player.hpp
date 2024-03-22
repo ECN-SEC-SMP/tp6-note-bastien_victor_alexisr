@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "property.h" // Inclure le fichier d'en-tête de la classe Property si nécessaire
+#include "property.hpp" // Inclure le fichier d'en-tête de la classe Property si nécessaire
 
 class Player {
 private:

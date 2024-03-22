@@ -2,7 +2,7 @@
 #define PROPERTY_H
 
 #include <string>
-#include "player.h" // Si nécessaire
+#include "player.hpp" // Si nécessaire
 
 class Player; // Déclaration anticipée de la classe Player
 
