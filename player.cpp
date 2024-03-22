@@ -1,4 +1,4 @@
-#include "player.h"
+#include "player.hpp"
 
 // Constructeur
 Player::Player(std::string _name, int _money, int _position) : name(_name), money(_money), position(_position) {}
