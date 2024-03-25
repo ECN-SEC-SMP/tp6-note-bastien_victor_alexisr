@@ -13,7 +13,7 @@
 #define GAMECORE_HPP
 
 #include <vector>
-#include "spaces.hpp"
+#include "spaces.h"
 
 
 class PlayerManager

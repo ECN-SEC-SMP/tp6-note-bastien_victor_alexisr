@@ -22,6 +22,7 @@ private:
     int remainingTurnsInJail;
 public:
     Player(std::string _name);
+    ~Player();
     std::string getName();
 };
 

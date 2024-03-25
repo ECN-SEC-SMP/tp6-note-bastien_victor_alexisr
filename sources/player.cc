@@ -9,7 +9,7 @@
  * 
  */
 
-#include "player.hpp"
+#include "player.h"
 
 Player::Player(std::string _name) : name(_name)
 {

@@ -12,7 +12,7 @@
 #ifndef SPACES_HPP
 #define SPACES_HPP
 
-#include "player.hpp"
+#include "player.h"
 #include <vector>
 
 class Space
@@ -22,7 +22,7 @@ class Space
     public:
         Space(std::string _name);
         ~Space();
-        std::string getName();
+        std::string getName() const;
         virtual void action(Player* player) = 0;
 };
 
@@ -30,18 +30,18 @@ class BuyableSpace : public Space
 {
     private:
         int price;
-        std::vector<int> rent;
         bool owned;
+        std::vector<int> rent;
     public:
         BuyableSpace(std::string _name, int _price, std::vector<int> _rent);
         ~BuyableSpace();
-        int getPrice();
+        int getPrice() const;
         bool isOwned();
+        std::vector<int> getRent() const;
         virtual void action(Player* player) = 0;
-        virtual int getRent() = 0;
 };
 
-enum Color
+enum class Color
 {
     PURPLE,
     LIGHT_BLUE,
@@ -53,7 +53,9 @@ enum Color
     BLUE
 };
 
-enum PropertyRent
+
+
+enum class PropertyRent
 {
     NO_HOUSE,
     ONE_HOUSE,
@@ -66,42 +68,39 @@ enum PropertyRent
 class Property : public BuyableSpace
 {
     private:
-        PropertyRent nbHouses;
+        PropertyRent nbBuildings;
         Color color;
-        std::vector<int> rent; // Price for a property with no house, 1 house, 2 houses, 3 houses, 4 houses, a hotel
     public:
         Property(std::string _name, Color _color, int _price, std::vector<int> _rent);
         ~Property();
-        int getRent();
-        int getNbHouses();
-        void setNbHouses(int _nbHouses); 
+        std::string getColor() const;
+        PropertyRent getNbBuildings() const;
+        void setNbBuildings(PropertyRent _nbBuildings); 
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Property& property);
 };
 
 
 class Station : public BuyableSpace
 {
     private:
-        std::vector<int> rent = {25, 50, 100, 200}; // Rent is based on the number of stations owned by the player
         int price = 200;
     public:
         Station(std::string _name); 
         ~Station();
-        int getRent();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Station& station);
 };
 
 class Utility : public BuyableSpace
 {
     private:
-        int rent; // Rent is calculated based on the dice roll made by the player
         int price = 150;
-        std::string name;
     public:
         Utility(std::string _name);
         ~Utility();
-        int getRent();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Utility& utility);
 };
 
 class Tax : public Space
@@ -112,8 +111,9 @@ class Tax : public Space
     public:
         Tax(std::string _name, int _amount);
         ~Tax();
-        int getAmount();
+        int getAmount() const;
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Tax& tax);
 };
 
 class Jail : public Space
@@ -124,6 +124,7 @@ class Jail : public Space
         Jail();
         ~Jail();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Jail& jail);
 };
 
 class GoToJail : public Space
@@ -134,6 +135,7 @@ class GoToJail : public Space
         GoToJail();
         ~GoToJail();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const GoToJail& goToJail);
 };
 
 class FreeParking : public Space
@@ -144,6 +146,7 @@ class FreeParking : public Space
         FreeParking();
         ~FreeParking();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const FreeParking& freeParking);
 };
 
 class Go : public Space
@@ -154,6 +157,7 @@ class Go : public Space
         Go();
         ~Go();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Go& go);
 };
 
 class CommunityChest : public Space
@@ -164,6 +168,7 @@ class CommunityChest : public Space
         CommunityChest();
         ~CommunityChest();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const CommunityChest& communityChest);
 };
 
 class Chance : public Space
@@ -174,6 +179,7 @@ class Chance : public Space
         Chance();
         ~Chance();
         void action(Player* player);
+        friend std::ostream& operator<<(std::ostream& os, const Chance& chance);
 };
 
 

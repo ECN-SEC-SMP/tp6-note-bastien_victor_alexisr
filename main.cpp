@@ -9,7 +9,9 @@
  * 
  */
 
-#include "sources/gamecore.hpp"
+#include "sources/gamecore.h"
+#include <iostream>
+
 
 std::vector<Space*> createClasssicBoard()
 {
@@ -64,5 +66,10 @@ int main()
 {
     std::vector<Space*> board = createClasssicBoard();
     GameCore game(board);
+    std::cout << "Board spaces:" << std::endl;
+    for (int i = 0; i < 40; i++)
+    {
+        std::cout << board[i]->getName() << std::endl;
+    }
     return 0;
 }
