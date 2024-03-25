@@ -1,5 +1,5 @@
 /**
- * @file spaces.hpp
+ * @file spaces.h
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the spaces of the board. All types of spaces inherit from this class
  * @version 0.1
@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef SPACES_HPP
-#define SPACES_HPP
+#ifndef SPACES_H
+#define SPACES_H
 
 #include "player.h"
 #include <vector>
@@ -73,7 +73,7 @@ class Property : public BuyableSpace
     public:
         Property(std::string _name, Color _color, int _price, std::vector<int> _rent);
         ~Property();
-        std::string getColor() const;
+        Color getColor() const;
         PropertyRent getNbBuildings() const;
         void setNbBuildings(PropertyRent _nbBuildings); 
         void action(Player* player);
@@ -185,4 +185,4 @@ class Chance : public Space
 
 
 
-#endif // SPACES_HPP
+#endif // SPACES_H

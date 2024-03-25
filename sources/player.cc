@@ -1,5 +1,5 @@
 /**
- * @file player.cpp
+ * @file player.cc
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the player
  * @version 0.1

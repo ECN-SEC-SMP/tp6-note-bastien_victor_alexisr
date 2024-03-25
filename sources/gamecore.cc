@@ -1,5 +1,5 @@
 /**
- * @file gamecore.cpp
+ * @file gamecore.cc
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the game core
  * @version 0.1

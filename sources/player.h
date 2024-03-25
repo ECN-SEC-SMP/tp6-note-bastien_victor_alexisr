@@ -1,5 +1,5 @@
 /**
- * @file player.hpp
+ * @file player.h
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the player
  * @version 0.1
@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include <string>
 
@@ -26,4 +26,4 @@ public:
     std::string getName();
 };
 
-#endif // PLAYER_HPP
+#endif // PLAYER_H
