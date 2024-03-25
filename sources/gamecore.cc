@@ -9,7 +9,8 @@
  * 
  */
 
-#include "gamecore.hpp"
+#include "gamecore.h"
+
 
 PlayerManager::PlayerManager()
 {
@@ -133,6 +134,7 @@ GameCore::~GameCore()
 int GameCore::rollDice()
 {
     // TODO
+    return 0;
 }
 
 void GameCore::movePlayer(Player* player, int diceValue)
