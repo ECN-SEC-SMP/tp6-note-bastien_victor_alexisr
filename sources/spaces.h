@@ -15,6 +15,8 @@
 #include "player.h"
 #include <vector>
 
+
+
 class Space
 {
     private:
@@ -30,13 +32,14 @@ class BuyableSpace : public Space
 {
     private:
         int price;
-        bool owned;
         std::vector<int> rent;
+        Player* owner;
     public:
         BuyableSpace(std::string _name, int _price, std::vector<int> _rent);
         ~BuyableSpace();
         int getPrice() const;
-        bool isOwned();
+        Player* getOwner() const;
+        void setOwner(Player* _owner);
         std::vector<int> getRent() const;
         virtual void action(Player* player) = 0;
 };

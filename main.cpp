@@ -66,10 +66,10 @@ int main()
 {
     std::vector<Space*> board = createClasssicBoard();
     GameCore game(board);
-    std::cout << "Board spaces:" << std::endl;
-    for (int i = 0; i < 40; i++)
+    game.startGame();
+    for (int i = 0; i < 10; i++)
     {
-        std::cout << board[i]->getName() << std::endl;
+        game.playTurn();
     }
     return 0;
 }

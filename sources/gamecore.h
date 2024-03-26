@@ -14,6 +14,8 @@
 
 #include <vector>
 #include "spaces.h"
+#include <optional>
+#include <random>
 
 
 class PlayerManager
@@ -27,6 +29,7 @@ class PlayerManager
         ~PlayerManager();
         void addPlayer(Player* player);
         void removePlayer(Player* player);
+        void setCurrentPlayer(Player* player);
         Player* getPlayer(int index);
         Player* getCurrentPlayer();
         Player* getNextPlayer();
@@ -45,6 +48,7 @@ class PropertyManager
         ~PropertyManager();
         void addProperty(Property* property);
         void removeProperty(Property* property);
+        void affectProperty(Player* player, Property* property);
         Property* getProperty(int index);
 };
 
@@ -55,7 +59,7 @@ class Dice
     public:
         Dice();
         ~Dice();
-        int roll();
+        int roll(std::mt19937& gen);
 };
 
 class GameCore
@@ -63,11 +67,15 @@ class GameCore
     private:
         PlayerManager playerManager;
         PropertyManager propertyManager;
+        Dice dice1;
+        Dice dice2;
         std::vector<Space*> board;
     public:
         GameCore(std::vector<Space*> _board);
         ~GameCore();
-        int rollDice();
+        void startGame();
+        void playTurn();
+        int rollDice(std::mt19937& gen, Dice dice, std::optional<Dice> dice2 = std::nullopt);
         void movePlayer(Player* player, int diceValue);
         void handleSpace(Player* player);
 

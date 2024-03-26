@@ -13,6 +13,7 @@
 #define PLAYER_H
 
 #include <string>
+#include "cards.h"
 
 class Player {
 private:
@@ -20,10 +21,18 @@ private:
     int money;            
     int position;            
     int remainingTurnsInJail;
+    Deck<ChanceCard*> chanceCards;
+    Deck<CommunityChestCard*> communityChestCards;
 public:
     Player(std::string _name);
     ~Player();
-    std::string getName();
+    int getPosition() const;
+    void setPosition(int _position);
+    int getMoney() const;
+    void setMoney(int _money);
+    int getRemainingTurnsInJail() const;
+    void setRemainingTurnsInJail(int _remainingTurnsInJail);
+    std::string getName() const;
 };
 
 #endif // PLAYER_H

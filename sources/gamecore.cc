@@ -10,6 +10,7 @@
  */
 
 #include "gamecore.h"
+#include <iostream>
 
 
 PlayerManager::PlayerManager()
@@ -70,6 +71,11 @@ Player* PlayerManager::getNextPlayer()
     }
 }
 
+void PlayerManager::setCurrentPlayer(Player* player)
+{
+    currentPlayer = player;
+}
+
 void PlayerManager::transferMoney(Player* sender, Player* receiver, int amount)
 {
     // TODO
@@ -118,9 +124,11 @@ Dice::~Dice()
 {
 }
 
-int Dice::roll()
+int Dice::roll(std::mt19937& gen)
 {
-    return rand() % 6 + 1;
+    std::uniform_int_distribution<int> dist(1, 6);
+    value = dist(gen);
+    return value;
 }
 
 GameCore::GameCore(std::vector<Space*> _board) : board(_board)
@@ -131,20 +139,71 @@ GameCore::~GameCore()
 {
 }
 
-int GameCore::rollDice()
+void GameCore::startGame()
 {
-    // TODO
-    return 0;
+    std::cout << "MONOPOLY GAME" << std::endl;
+    std::cout << "Welcome to the Monopoly game!" << std::endl;
+    std::cout << "Please enter the number of players (2-8): ";
+    int nbPlayers;
+    std::cin >> nbPlayers;
+    if (nbPlayers < 2 || nbPlayers > 8)
+    {
+        std::cout << "Invalid number of players. Please enter a number between 2 and 8." << std::endl;
+        return;
+    }
+    for (int i = 0; i < nbPlayers; i++)
+    {
+        std::string name;
+        std::cout << "Enter the name of player " << i + 1 << ": ";
+        std::cin >> name;
+        Player* player = new Player(name);
+        playerManager.addPlayer(player);
+    }
+    playerManager.setCurrentPlayer(playerManager.getPlayer(0));
+    dice1 = Dice();
+    dice2 = Dice();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Press any key to start the game." << std::endl;
+    std::cin.get();
+}
+
+void GameCore::playTurn()
+{
+    std::cout << "It is " << playerManager.getCurrentPlayer()->getName() << "'s turn." << std::endl;
+    std::cout << "Press any key to roll the dice." << std::endl;
+    std::cin.get();
+    std::mt19937 randomEngine(time(nullptr));
+    int diceValue = rollDice(randomEngine, dice1, dice2);
+    std::cout << "You rolled a " << diceValue << "." << std::endl;
+    movePlayer(playerManager.getCurrentPlayer(), diceValue);
+    handleSpace(playerManager.getCurrentPlayer());
+    playerManager.setCurrentPlayer(playerManager.getNextPlayer());
+}
+
+int GameCore::rollDice(std::mt19937& gen, Dice dice1, std::optional<Dice> dice2)
+{
+    int value1 = dice1.roll(gen);
+    if (dice2.has_value())
+    {
+        int value2 = dice2.value().roll(gen);
+        return value1 + value2;
+    }
+    return value1;
 }
 
 void GameCore::movePlayer(Player* player, int diceValue)
 {
-    // TODO
+    int numSpaces = board.size();
+    int currentIndex = player->getPosition();
+    int newIndex = (currentIndex + diceValue) % numSpaces;
+    player->setPosition(newIndex);
 }
 
 void GameCore::handleSpace(Player* player)
 {
-    // TODO
+    Space* space = board[player->getPosition()];
+    // space->action(player);
+    std::cout << player->getName() << " landed on " << space->getName() << "." << std::endl;
 }
 
 
