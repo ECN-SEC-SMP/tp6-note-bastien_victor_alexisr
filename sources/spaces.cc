@@ -25,7 +25,7 @@ std::string Space::getName() const
     return name;
 }
 
-BuyableSpace::BuyableSpace(std::string _name, int _price, std::vector<int> _rent) : Space(_name), price(_price), owned(false), rent(_rent)
+BuyableSpace::BuyableSpace(std::string _name, int _price, std::vector<int> _rent) : Space(_name), price(_price), rent(_rent), owner(nullptr)
 {
 }
 
@@ -38,9 +38,14 @@ int BuyableSpace::getPrice() const
     return price;
 }
 
-bool BuyableSpace::isOwned()
+Player* BuyableSpace::getOwner() const
 {
-    return owned;
+    return owner;
+}
+
+void BuyableSpace::setOwner(Player* _owner)
+{
+    owner = _owner;
 }
 
 std::vector<int> BuyableSpace::getRent() const
@@ -92,7 +97,7 @@ Property::~Property()
 
 void Property::action(Player* player)
 {
-    if (isOwned())
+    if (getOwner() != nullptr && getOwner() != player)
     {
         // Pay rent
     }
@@ -154,7 +159,7 @@ Station::~Station()
 
 void Station::action(Player* player)
 {
-    if (isOwned())
+    if (getOwner() != nullptr && getOwner() != player)
     {
         // Pay rent
     }
@@ -196,7 +201,7 @@ Utility::~Utility()
 
 void Utility::action(Player* player)
 {
-    if (isOwned())
+    if (getOwner() != nullptr && getOwner() != player)
     {
         // Pay rent
     }

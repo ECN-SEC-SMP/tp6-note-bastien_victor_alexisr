@@ -12,8 +12,8 @@
 #include <gtest/gtest.h>
 #include "../sources/cards.h"
 
-std::random_device rd;
-std::mt19937 gen(rd());
+
+std::mt19937 gen(time(nullptr));
 
 TEST(CommunityChestCard, Constructor)
 {
@@ -39,7 +39,7 @@ TEST(Deck, AddCard)
 {
     Deck<CommunityChestCard> deck;
     CommunityChestCard card1("Avancez jusqu'à la case départ");
-    CommunityChestCard card2("Vous êtes libéré de prison (cette carte peut être conservée jusqu'à ce qu'elle soit utilisée, ou vendue)");
+    CommunityChestCard card2("Vous êtes libéré de prison");
     deck.addCard(&card1);
     deck.addCard(&card2);
     EXPECT_EQ(deck.getCards().size(), 2);
@@ -57,7 +57,7 @@ TEST(Deck, RemoveCard)
 {
     Deck<CommunityChestCard> deck;
     CommunityChestCard card1("Avancez jusqu'à la case départ");
-    CommunityChestCard card2("Vous êtes libéré de prison (cette carte peut être conservée jusqu'à ce qu'elle soit utilisée, ou vendue)");
+    CommunityChestCard card2("Vous êtes libéré de prison");
     deck.addCard(&card1);
     deck.addCard(&card2);
     deck.removeCard(&card1);
@@ -68,7 +68,7 @@ TEST(Deck, PickCard)
 {
     Deck<CommunityChestCard> deck;
     CommunityChestCard card1("Avancez jusqu'à la case départ");
-    CommunityChestCard card2("Vous êtes libéré de prison (cette carte peut être conservée jusqu'à ce qu'elle soit utilisée, ou vendue)");
+    CommunityChestCard card2("Vous êtes libéré de prison");
     deck.addCard(&card1);
     deck.addCard(&card2);
     Card* pickedCard = deck.pickCard();
@@ -78,7 +78,7 @@ TEST(Deck, PickCard)
 TEST(Deck, Shuffle)
 {
     Deck<CommunityChestCard> deck;
-    CommunityChestCard card1("Vous êtes libéré de prison (cette carte peut être conservée jusqu'à ce qu'elle soit utilisée, ou vendue)");
+    CommunityChestCard card1("Vous êtes libéré de prison");
     CommunityChestCard card2("Avancez jusqu'à la case départ");
     CommunityChestCard card3("Recevez votre revenu annuel de 100€");
     CommunityChestCard card4("Allez en prison. Avancez tout droit en prison. Ne passez pas par la case départ. Ne recevez pas 200€");
@@ -113,22 +113,15 @@ TEST(Deck, Shuffle)
     deck.addCard(&card16);
 
     CommunityChestCard card1Copy = card1;
-    int fail = 0;
     // When the deck is shuffled, there is a chance that the first card is still the same (1 in 16 chance)
     // So we shuffle the deck 10 times to make sure that the first card is not the same as the original one
     // The probability that the first card is still the same after 10 shuffles is 1 in 1,099,511,627,776
-    for (int i = 0; i < 10; i++)
-    {
-        try{
-            deck.shuffle(gen);
-            EXPECT_NE(deck.getCards().at(0)->getDescription(), card1Copy.getDescription());
-            break; 
-        } catch (...) {
-            ++fail;
-        } 
+    int i = 0;
+    while (deck.getCards().at(0)->getDescription() == card1Copy.getDescription() && i < 10) {
+        deck.shuffle(gen);
+        ++i;
     }
-
-    EXPECT_LT(fail, 10);
+    EXPECT_NE(deck.getCards().at(0)->getDescription(), card1Copy.getDescription());
 
     Deck<ChanceCard> deck2;
     ChanceCard card17("Faites des réparations dans toutes vos maisons. Versez pour chaque maison 25€ et pour chaque hôtel 100€");
@@ -139,7 +132,7 @@ TEST(Deck, Shuffle)
     ChanceCard card22("Allez à la gare de Lyon. Si vous passez par la case départ, recevez 200€");
     ChanceCard card23("Avancez au Boulevard de la Villette. Si vous passez par la case départ, recevez 200€");
     ChanceCard card24("Rendez-vous à la Rue de la Paix");
-    ChanceCard card25("Vous êtes libéré de prison (cette carte peut être conservée jusqu'à ce qu'elle soit utilisée, ou vendue)");
+    ChanceCard card25("Vous êtes libéré de prison");
     ChanceCard card26("Allez en prison. Avancez tout droit en prison. Ne passez pas par la case départ. Ne recevez pas 200€");
     ChanceCard card27("Amande pour excès de vitesse. 15€");
     ChanceCard card28("Vous êtes imposé pour les réparations de voirie à raison de 40€ par maison et 115€ par hôtel");
@@ -166,20 +159,13 @@ TEST(Deck, Shuffle)
     deck2.addCard(&card32);
 
     ChanceCard card17Copy = card17;
-    fail = 0;
     // When the deck is shuffled, there is a chance that the first card is still the same (1 in 16 chance)
     // So we shuffle the deck 10 times to make sure that the first card is not the same as the original one
     // The probability that the first card is still the same after 10 shuffles is 1 in 1,099,511,627,776
-    for (int i = 0; i < 10; i++)
-    {
-        try{
-            deck2.shuffle(gen);
-            EXPECT_NE(deck2.getCards().at(0)->getDescription(), card17Copy.getDescription());
-            break; 
-        } catch (...) {
-            ++fail;
-        } 
+    i = 0;
+    while (deck2.getCards().at(0)->getDescription() == card17Copy.getDescription() && i < 10) {
+        deck2.shuffle(gen);
+        ++i;
     }
-
-    EXPECT_LT(fail, 10);
+    EXPECT_NE(deck2.getCards().at(0)->getDescription(), card17Copy.getDescription());
 }

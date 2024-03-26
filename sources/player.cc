@@ -19,7 +19,37 @@ Player::~Player()
 {
 }
 
-std::string Player::getName()
+int Player::getPosition() const
+{
+    return position;
+}
+
+void Player::setPosition(int _position)
+{
+    position = _position;
+}
+
+int Player::getMoney() const
+{
+    return money;
+}
+
+void Player::setMoney(int _money)
+{
+    money = _money;
+}
+
+int Player::getRemainingTurnsInJail() const
+{
+    return remainingTurnsInJail;
+}
+
+void Player::setRemainingTurnsInJail(int _remainingTurnsInJail)
+{
+    remainingTurnsInJail = _remainingTurnsInJail;
+}
+
+std::string Player::getName() const
 {
     return name;
 }
