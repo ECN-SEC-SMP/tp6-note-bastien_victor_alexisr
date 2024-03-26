@@ -1,5 +1,5 @@
 /**
- * @file spaces.cpp
+ * @file spaces.cc
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the spaces of the board. All types of spaces inherit from this class
  * @version 0.1
@@ -112,16 +112,16 @@ void Property::setNbBuildings(PropertyRent _nbBuildings)
     nbBuildings = _nbBuildings;
 }
 
-std::string Property::getColor() const
+Color Property::getColor() const
 {
-    return colorToString(color);
+    return color;
 }
 
 std::ostream& operator<<(std::ostream& os, const Property& property)
 {
     os << "Space Type: Property" << std::endl;
     os << "Property Name: " << property.getName() << std::endl;
-    os << "Property Color: " << property.getColor() << std::endl;
+    os << "Property Color: " << colorToString(property.getColor()) << std::endl;
     os << "Property Price: " << property.getPrice() << std::endl;
     os << "Property Rent: " << std::endl;
     for (int i = 0; i < property.getRent().size() - 1; i++)

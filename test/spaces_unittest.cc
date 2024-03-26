@@ -13,7 +13,7 @@
 #include "../sources/spaces.h" 
 
 // Test the creation of each type of space
-TEST(SpaceTest, Creation) {
+TEST(Space, Creation) {
     std::vector<int> propertyRent = {0, 0, 0, 0, 0, 0};
     Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, propertyRent);
     Station station1 = Station("Gare Montparnasse");
@@ -39,8 +39,8 @@ TEST(SpaceTest, Creation) {
     EXPECT_NE(&chance1, nullptr);
 }
 
-// Test the printing of each type of space
-TEST(SpaceTest, Printing) {
+// Test the getters of each type of space
+TEST(Space, Getters) {
     std::vector<int> propertyRent = {0, 0, 0, 0, 0, 0};
     Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, propertyRent);
     Station station1 = Station("Gare Montparnasse");
@@ -65,25 +65,24 @@ TEST(SpaceTest, Printing) {
     EXPECT_EQ(communityChest1.getName(), "Community Chest");
     EXPECT_EQ(chance1.getName(), "Chance");
 
-    // Check if the rent vectors are not null
+    // Check if the rent vectors are null
     EXPECT_NE(property1.getRent().size(), 0);
     EXPECT_NE(station1.getRent().size(), 0);
+    EXPECT_NE(utility1.getRent().size(), 0);
 
-    // Check if the objects are printed correctly
-    std::cout << "Spaces created :" << std::endl;
-    std::cout << property1 << std::endl;
-    std::cout << station1 << std::endl;
-    std::cout << utility1 << std::endl;
-    std::cout << tax1 << std::endl;
-    std::cout << jail1 << std::endl;
-    std::cout << goToJail1 << std::endl;
-    std::cout << freeParking1 << std::endl;
-    std::cout << go1 << std::endl;
-    std::cout << communityChest1 << std::endl;
-    std::cout << chance1 << std::endl;
-}
+    // Check if the colors are correct
+    EXPECT_EQ(property1.getColor(), Color::PURPLE);
 
-int main(int argc, char **argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    // Check if the amount is correct
+    EXPECT_EQ(tax1.getAmount(), 200);
+
+    // Check if the number of buildings is correct
+    EXPECT_EQ(property1.getNbBuildings(), PropertyRent::NO_HOUSE);
+    property1.setNbBuildings(PropertyRent::ONE_HOUSE);
+    EXPECT_EQ(property1.getNbBuildings(), PropertyRent::ONE_HOUSE);
+
+    // Check if the price is correct
+    EXPECT_EQ(station1.getPrice(), 200);
+    EXPECT_EQ(utility1.getPrice(), 150);
+    EXPECT_EQ(property1.getPrice(), 60);
 }

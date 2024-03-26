@@ -1,5 +1,5 @@
 /**
- * @file gamecore.hpp
+ * @file gamecore.h
  * @author Bastien, Victor, AlexisR 
  * @brief Class handling the game core
  * @version 0.1
@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef GAMECORE_HPP
-#define GAMECORE_HPP
+#ifndef GAMECORE_H
+#define GAMECORE_H
 
 #include <vector>
 #include "spaces.h"
@@ -73,4 +73,4 @@ class GameCore
 
 };
 
-#endif // GAMECORE_HPP
+#endif // GAMECORE_H
