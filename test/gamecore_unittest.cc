@@ -16,8 +16,9 @@
 TEST(Dice, Roll)
 {
     Dice dice;
-    std::mt19937 randomEngine(time(nullptr));
-    int roll = dice.roll(randomEngine);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    int roll = dice.roll(gen);
     EXPECT_GE(roll, 1);
     EXPECT_LE(roll, 6);
 }

@@ -12,10 +12,12 @@
 #ifndef SPACES_H
 #define SPACES_H
 
+#include "managers.h"
 #include "player.h"
+#include <memory>
 #include <vector>
 
-
+class BoardManager; // Forward declaration
 
 class Space
 {
@@ -25,7 +27,7 @@ class Space
         Space(std::string _name);
         ~Space();
         std::string getName() const;
-        virtual void action(Player* player) = 0;
+        virtual void action(std::shared_ptr<BoardManager> board)  = 0;
 };
 
 class BuyableSpace : public Space
@@ -33,15 +35,15 @@ class BuyableSpace : public Space
     private:
         int price;
         std::vector<int> rent;
-        Player* owner;
+        std::shared_ptr<Player> owner;
     public:
         BuyableSpace(std::string _name, int _price, std::vector<int> _rent);
         ~BuyableSpace();
         int getPrice() const;
-        Player* getOwner() const;
-        void setOwner(Player* _owner);
+        std::shared_ptr<Player> getOwner() const;
+        void setOwner(std::shared_ptr<Player> _owner);
         std::vector<int> getRent() const;
-        virtual void action(Player* player) = 0;
+        virtual void action(std::shared_ptr<BoardManager> board)  = 0;
 };
 
 enum class Color
@@ -61,6 +63,7 @@ enum class Color
 enum class PropertyRent
 {
     NO_HOUSE,
+    FULL_STREET,
     ONE_HOUSE,
     TWO_HOUSES,
     THREE_HOUSES,
@@ -79,7 +82,7 @@ class Property : public BuyableSpace
         Color getColor() const;
         PropertyRent getNbBuildings() const;
         void setNbBuildings(PropertyRent _nbBuildings); 
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Property& property);
 };
 
@@ -91,7 +94,7 @@ class Station : public BuyableSpace
     public:
         Station(std::string _name); 
         ~Station();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Station& station);
 };
 
@@ -102,7 +105,7 @@ class Utility : public BuyableSpace
     public:
         Utility(std::string _name);
         ~Utility();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Utility& utility);
 };
 
@@ -115,7 +118,7 @@ class Tax : public Space
         Tax(std::string _name, int _amount);
         ~Tax();
         int getAmount() const;
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Tax& tax);
 };
 
@@ -126,7 +129,7 @@ class Jail : public Space
     public:
         Jail();
         ~Jail();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Jail& jail);
 };
 
@@ -137,7 +140,7 @@ class GoToJail : public Space
     public:
         GoToJail();
         ~GoToJail();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const GoToJail& goToJail);
 };
 
@@ -148,7 +151,7 @@ class FreeParking : public Space
     public:
         FreeParking();
         ~FreeParking();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const FreeParking& freeParking);
 };
 
@@ -159,7 +162,7 @@ class Go : public Space
     public:
         Go();
         ~Go();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Go& go);
 };
 
@@ -170,7 +173,7 @@ class CommunityChest : public Space
     public:
         CommunityChest();
         ~CommunityChest();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const CommunityChest& communityChest);
 };
 
@@ -181,7 +184,7 @@ class Chance : public Space
     public:
         Chance();
         ~Chance();
-        void action(Player* player);
+        void action(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Chance& chance);
 };
 

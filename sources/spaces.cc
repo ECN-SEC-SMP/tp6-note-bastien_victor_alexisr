@@ -38,12 +38,12 @@ int BuyableSpace::getPrice() const
     return price;
 }
 
-Player* BuyableSpace::getOwner() const
+std::shared_ptr<Player> BuyableSpace::getOwner() const
 {
     return owner;
 }
 
-void BuyableSpace::setOwner(Player* _owner)
+void BuyableSpace::setOwner(std::shared_ptr<Player> _owner)
 {
     owner = _owner;
 }
@@ -95,15 +95,49 @@ Property::~Property()
 {
 }
 
-void Property::action(Player* player)
+void Property::action(std::shared_ptr<BoardManager> board)
 {
-    if (getOwner() != nullptr && getOwner() != player)
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    if (getOwner() != nullptr)
     {
+        if (getOwner() == player){
+            std::cout << "You own this property" << std::endl;
+            return;
+        }
         // Pay rent
+        // TODO: Implement the reset of a property that was owned by a now bankrupt player
+        std::cout << "This property is owned by " << getOwner()->getName() << std::endl;
+        int rent = getRent()[static_cast<int>(nbBuildings)];
+        std::cout << player->getName() << " needs to pay " << rent << " to " << getOwner()->getName() << std::endl;
+        board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
+
     }
     else
     {
-        // Ask player if he wants to buy the property, if not, auction
+        std::cout << "This property is not owned" << std::endl;
+        std::cout << *this << std::endl;
+        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
+        char answer;
+        std::cin >> answer;
+        if (answer == 'y')
+        {
+            if (player->getMoney() < getPrice())
+            {
+                std::cout << "You don't have enough money to buy this property" << std::endl;
+            }
+            else
+            {
+                board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
+                board->affectProperty(player, this);
+                std::cout << "You now own this property" << std::endl;
+            }
+        }
+        else
+        {
+            // Auction
+        }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     }
 }
 
@@ -157,15 +191,49 @@ Station::~Station()
 {
 }
 
-void Station::action(Player* player)
+void Station::action(std::shared_ptr<BoardManager> board)
 {
-    if (getOwner() != nullptr && getOwner() != player)
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    if (getOwner() != nullptr)
     {
+        if (getOwner() == player){
+            std::cout << "You own this station" << std::endl;
+            return;
+        }
         // Pay rent
+        // TODO: Implement the reset of a station that was owned by a now bankrupt player
+        std::cout << "This station is owned by " << getOwner()->getName() << std::endl;
+        int rent = getRent()[getOwner()->getNbStationsOwned() - 1];
+        std::cout << getOwner()->getName() << " owns " << getOwner()->getNbStationsOwned() << " station(s)" << std::endl;
+        std::cout << player->getName() << " needs to pay " << rent << " to " << getOwner()->getName() << std::endl;
+        board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
     }
     else
     {
-        // Ask player if he wants to buy the station, if not, auction
+        std::cout << "This station is not owned" << std::endl;
+        std::cout << *this << std::endl;
+        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
+        char answer;
+        std::cin >> answer;
+        if (answer == 'y')
+        {
+            if (player->getMoney() < getPrice())
+            {
+                std::cout << "You don't have enough money to buy this stattion" << std::endl;
+            }
+            else
+            {
+                board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
+                board->affectProperty(player, this);
+                std::cout << "You now own this this station" << std::endl;
+                player->setNbStationsOwned(player->getNbStationsOwned() + 1);
+            }
+        }
+        else
+        {
+            // Auction
+        }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
@@ -191,7 +259,7 @@ std::ostream& operator<<(std::ostream& os, const Station& station)
     return os;
 }
 
-Utility::Utility(std::string _name) : BuyableSpace(_name, 150, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12})
+Utility::Utility(std::string _name) : BuyableSpace(_name, 150, {})
 {
 }
 
@@ -199,15 +267,50 @@ Utility::~Utility()
 {
 }
 
-void Utility::action(Player* player)
+void Utility::action(std::shared_ptr<BoardManager> board)
 {
-    if (getOwner() != nullptr && getOwner() != player)
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    if (getOwner() != nullptr)
     {
+        if (getOwner() == player){
+            std::cout << "You own this utility" << std::endl;
+            return;
+        }
         // Pay rent
+        std::cout << "This utility is owned by " << getOwner()->getName() << std::endl;
+        std::pair<int, int> dicesValue = board->getCurrentDicesValue();
+        std::cout << "You rolled a " << dicesValue.first + dicesValue.second << std::endl;
+        int rent = (dicesValue.first + dicesValue.second) * (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10);
+        std::cout << player->getName() << " needs to pay " << rent << " to " << getOwner()->getName() << std::endl;
+        board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
     }
     else
     {
-        // Ask player if he wants to buy the utility, if not, auction
+        std::cout << "This utility is not owned" << std::endl;
+        std::cout << *this << std::endl;
+        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
+        char answer;
+        std::cin >> answer;
+        if (answer == 'y')
+        {
+            if (player->getMoney() < getPrice())
+            {
+                std::cout << "You don't have enough money to buy this utility" << std::endl;
+            }
+            else
+            {
+                board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
+                board->affectProperty(player, this);
+                std::cout << "You now own this utility" << std::endl;
+                player->setNbUtilitiesOwned(player->getNbUtilitiesOwned() + 1);
+            }
+        }
+        else
+        {
+            // Auction
+        }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     }
 }
 
@@ -234,9 +337,12 @@ int Tax::getAmount() const
     return amount;
 }
 
-void Tax::action(Player* player)
+void Tax::action(std::shared_ptr<BoardManager> board)
 {
-    // Pay tax
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    std::cout << player->getName() << " needs to pay " << amount << " to the bank" << std::endl;
+    board->getPlayerManager()->transferMoneyFromTo(player, nullptr, amount);
+
 }
 
 std::ostream& operator<<(std::ostream& os, const Tax& tax)
@@ -255,10 +361,63 @@ Jail::~Jail()
 {
 }
 
-void Jail::action(Player* player)
+void Jail::action(std::shared_ptr<BoardManager> board)
 {
-    // TODO
-}
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    if (player->getRemainingTurnsInJail() > 0)
+    {
+        std::cout << "You are stuck in jail for " << player->getRemainingTurnsInJail() << " turn(s)" << std::endl;
+        if (player->getHasGetOutOfJailCard())
+        {
+            std::cout << "Do you want to use your Get Out of Jail Free card? [y/n]" << std::endl;
+            char answer;
+            std::cin >> answer;
+            if (answer == 'y')
+            {
+                player->setRemainingTurnsInJail(0);
+                player->setHasGetOutOfJailCard(false);
+                std::cout << "You are free to go" << std::endl;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                return;
+            }
+        }
+        std::cout << "Do you want to pay 50 to get out of jail? [y/n]" << std::endl;
+        char answer;
+        std::cin >> answer;
+        if (answer == 'y')
+        {
+            if (player->getMoney() < 50)
+            {
+                std::cout << "You don't have enough money to pay the fine" << std::endl;
+            }
+            else
+            {
+                board->getPlayerManager()->transferMoneyFromTo(player, nullptr, 50);
+                player->setRemainingTurnsInJail(0);
+                std::cout << "You are free to go" << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "Roll the dice and get a double to get out of jail" << std::endl;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            board->rollDice(gen);
+            std::pair<int, int> dicesValue = board->getCurrentDicesValue();
+            if (dicesValue.first == dicesValue.second)
+            {
+                player->setRemainingTurnsInJail(0);
+                std::cout << "You are free to go" << std::endl;
+            }
+        }
+        player->setRemainingTurnsInJail(player->getRemainingTurnsInJail() - 1);
+
+    }
+    else
+    {
+        std::cout << "You are free to go" << std::endl;
+    }
+} 
 
 std::ostream& operator<<(std::ostream& os, const Jail& jail)
 {
@@ -274,9 +433,12 @@ GoToJail::~GoToJail()
 {
 }
 
-void GoToJail::action(Player* player)
+void GoToJail::action(std::shared_ptr<BoardManager> board)
 {
-    // Go to jail
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    std::cout << "You are going to jail" << std::endl;
+    player->setRemainingTurnsInJail(3);
+    board->movePlayer(20);
 }
 
 std::ostream& operator<<(std::ostream& os, const GoToJail& goToJail)
@@ -293,9 +455,10 @@ FreeParking::~FreeParking()
 {
 }
 
-void FreeParking::action(Player* player)
+void FreeParking::action(std::shared_ptr<BoardManager> board)
 {
-    // Do nothing
+    std::cout << "You landed on Free Parking" << std::endl;
+    std::cout << "There is nothing to do here, enjoy your stay" << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& os, const FreeParking& freeParking)
@@ -312,9 +475,11 @@ Go::~Go()
 {
 }
 
-void Go::action(Player* player)
+void Go::action(std::shared_ptr<BoardManager> board)
 {
-    // Get 200 if you pass by and 400 if you land on it
+    std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
+    std::cout << player->getName() << " landed exactly on the Go space and earned an extra 200" << std::endl;
+    board->getPlayerManager()->transferMoneyFromTo(nullptr, player, 200);
 }
 
 std::ostream& operator<<(std::ostream& os, const Go& go)
@@ -331,9 +496,9 @@ CommunityChest::~CommunityChest()
 {
 }
 
-void CommunityChest::action(Player* player)
+void CommunityChest::action(std::shared_ptr<BoardManager> board)
 {
-    // Draw a card
+    board->drawCommunityChestCard();
 }
 
 std::ostream& operator<<(std::ostream& os, const CommunityChest& communityChest)
@@ -350,10 +515,11 @@ Chance::~Chance()
 {
 }
 
-void Chance::action(Player* player)
+void Chance::action(std::shared_ptr<BoardManager> board)
 {
-    // Draw a card
+    board->drawChanceCard();
 }
+
 
 std::ostream& operator<<(std::ostream& os, const Chance& chance)
 {

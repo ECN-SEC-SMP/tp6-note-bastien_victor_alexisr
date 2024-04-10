@@ -13,16 +13,17 @@
 #define PLAYER_H
 
 #include <string>
-#include "cards.h"
 
 class Player {
 private:
     std::string name;      
-    int money;            
-    int position;            
-    int remainingTurnsInJail;
-    Deck<ChanceCard*> chanceCards;
-    Deck<CommunityChestCard*> communityChestCards;
+    int money = 1500;            
+    int position = 0;            
+    int nbStationsOwned = 0;
+    int nbUtilitiesOwned = 0;
+    int remainingTurnsInJail = 0;
+    bool hasGetOutOfJailCard = false;
+    bool isBankrupt = false;
 public:
     Player(std::string _name);
     ~Player();
@@ -32,6 +33,14 @@ public:
     void setMoney(int _money);
     int getRemainingTurnsInJail() const;
     void setRemainingTurnsInJail(int _remainingTurnsInJail);
+    bool getIsBankrupt() const;
+    void setIsBankrupt(bool _isBankrupt);
+    bool getHasGetOutOfJailCard() const;
+    void setHasGetOutOfJailCard(bool _hasGetOutOfJailCard);
+    int getNbStationsOwned() const;
+    void setNbStationsOwned(int _nbStationsOwned);
+    int getNbUtilitiesOwned() const;
+    void setNbUtilitiesOwned(int _nbUtilitiesOwned);
     std::string getName() const;
 };
 
