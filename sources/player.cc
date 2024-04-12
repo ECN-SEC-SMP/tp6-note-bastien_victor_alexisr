@@ -49,6 +49,46 @@ void Player::setRemainingTurnsInJail(int _remainingTurnsInJail)
     remainingTurnsInJail = _remainingTurnsInJail;
 }
 
+bool Player::getIsBankrupt() const
+{
+    return isBankrupt;
+}
+
+void Player::setIsBankrupt(bool _isBankrupt)
+{
+    isBankrupt = _isBankrupt;
+}
+
+int Player::getNbStationsOwned() const
+{
+    return nbStationsOwned;
+}
+
+void Player::setNbStationsOwned(int _nbStationsOwned)
+{
+    nbStationsOwned = _nbStationsOwned;
+}
+
+bool Player::getHasGetOutOfJailCard() const
+{
+    return hasGetOutOfJailCard;
+}
+
+void Player::setHasGetOutOfJailCard(bool _hasGetOutOfJailCard)
+{
+    hasGetOutOfJailCard = _hasGetOutOfJailCard;
+}
+
+int Player::getNbUtilitiesOwned() const
+{
+    return nbUtilitiesOwned;
+}
+
+void Player::setNbUtilitiesOwned(int _nbUtilitiesOwned)
+{
+    nbUtilitiesOwned = _nbUtilitiesOwned;
+}
+
 std::string Player::getName() const
 {
     return name;

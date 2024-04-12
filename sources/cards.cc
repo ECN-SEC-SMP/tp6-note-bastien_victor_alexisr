@@ -21,14 +21,23 @@ std::string Card::getDescription() const
     return description;
 }
 
-CommunityChestCard::CommunityChestCard(std::string _description) : Card(_description) {}
 
+
+CommunityChestCard::CommunityChestCard(std::string _description, std::function<void(std::shared_ptr<BoardManager>)> _action) : Card(_description)  
+{
+    _actionFunction = _action;  
+}
 CommunityChestCard::~CommunityChestCard() {}
 
-void CommunityChestCard::action()
+void CommunityChestCard::action(std::shared_ptr<BoardManager> board)
 {
-    // TODO
+    if (_actionFunction)
+    {
+        std::cout << "Community Chest Card: " << getDescription() << std::endl;
+        _actionFunction(board);
+    }
 }
+
 
 std::ostream& operator<<(std::ostream& os, const CommunityChestCard& card)
 {
@@ -36,13 +45,20 @@ std::ostream& operator<<(std::ostream& os, const CommunityChestCard& card)
     return os;
 }
 
-ChanceCard::ChanceCard(std::string _description) : Card(_description) {}
+ChanceCard::ChanceCard(std::string _description, std::function<void(std::shared_ptr<BoardManager> )> _action) : Card(_description) 
+{
+    _actionFunction = _action;
+}
 
 ChanceCard::~ChanceCard() {}
 
-void ChanceCard::action()
+void ChanceCard::action(std::shared_ptr<BoardManager>  board)
 {
-    // TODO
+    if (_actionFunction)
+    {
+        std::cout << "Chance Card: " << getDescription() << std::endl;
+        _actionFunction(board);
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const ChanceCard& card)

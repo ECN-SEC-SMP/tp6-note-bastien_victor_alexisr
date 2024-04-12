@@ -65,10 +65,10 @@ TEST(Space, Getters) {
     EXPECT_EQ(communityChest1.getName(), "Community Chest");
     EXPECT_EQ(chance1.getName(), "Chance");
 
-    // Check if the rent vectors are null
+    // Check if the rent vectors are not empty for properties and stations and empty for utilities
     EXPECT_NE(property1.getRent().size(), 0);
     EXPECT_NE(station1.getRent().size(), 0);
-    EXPECT_NE(utility1.getRent().size(), 0);
+    EXPECT_EQ(utility1.getRent().size(), 0);
 
     // Check if the colors are correct
     EXPECT_EQ(property1.getColor(), Color::PURPLE);

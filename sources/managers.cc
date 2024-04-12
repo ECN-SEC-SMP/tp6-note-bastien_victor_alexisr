@@ -1,0 +1,194 @@
+/**
+ * @file managers.cc
+ * @author Bastien, Victor, AlexisR 
+ * @brief Class handling the management of players and buyable spaces
+ * @version 0.1
+ * @date 2024-03-27
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+#include "managers.h"
+
+
+PlayerManager::PlayerManager()
+{
+}
+
+PlayerManager::~PlayerManager()
+{
+}
+
+void PlayerManager::addPlayer(std::shared_ptr<Player> player)
+{
+    players.push_back(player);
+    if (nbPlayers == 0)
+    {
+        currentPlayer = players[0];
+    }
+    nbPlayers++;
+}
+
+void PlayerManager::removePlayer(std::shared_ptr<Player> player)
+{
+    for (auto it = players.begin(); it != players.end(); ++it)
+    {
+        if (*it == player)
+        {
+            players.erase(it);
+            nbPlayers--;
+            break;
+        }
+    }
+}
+
+std::shared_ptr<Player> PlayerManager::getPlayer(int index)
+{
+    return players[index];
+}
+
+int PlayerManager::getNbPlayers()
+{
+    return nbPlayers;
+}
+
+std::shared_ptr<Player> PlayerManager::getCurrentPlayer()
+{
+    if (currentPlayer == nullptr) {
+        std::cout << "Current player is null!" << std::endl;
+        return nullptr;
+    }
+    return currentPlayer;
+}
+
+
+void PlayerManager::setNextPlayer()
+{
+    int currentPlayerIndex = std::distance(players.begin(), std::find(players.begin(), players.end(), currentPlayer));
+    currentPlayerIndex = (currentPlayerIndex + 1) % nbPlayers;
+    currentPlayer = players[currentPlayerIndex];
+}
+
+void PlayerManager::setCurrentPlayer(std::shared_ptr<Player> player)
+{
+    currentPlayer = player;
+}
+
+void PlayerManager::transferMoneyFromTo(std::shared_ptr<Player> player1, std::shared_ptr<Player> player2, int amount)
+{
+    if (player1 != nullptr)
+    {
+        player1->setMoney(player1->getMoney() - amount);
+        std::cout << player1->getName() << " has been debited of " << amount << "€." << std::endl;
+        if (player1->getMoney() < 0)
+        {
+            player1->setMoney(0);
+            std::cout << player1->getName() << " is bankrupt." << std::endl;
+            player1->setIsBankrupt(true);
+        }
+    }
+    if (player2 != nullptr)
+    {
+        player2->setMoney(player2->getMoney() + amount); // In case of a bankrupcy from player1, we assume that the bank can add the missing money to player2 so that it still has the right amount of money
+        std::cout << player2->getName() << " has been credited of " << amount << "€." << std::endl;
+    }
+}
+
+BoardManager::~BoardManager()
+{
+}
+
+BoardManager::BoardManager(std::vector<Space*> _board, std::vector<std::unique_ptr<CommunityChestCard>> _communityChestDeck, std::vector<std::unique_ptr<ChanceCard>> _chanceDeck)
+    : board(_board), chanceDeck(std::move(_chanceDeck)), communityChestDeck(std::move(_communityChestDeck)), playerManager(PlayerManager())
+{
+}
+
+PlayerManager* BoardManager::getPlayerManager()
+{
+    return &playerManager;
+}
+
+void BoardManager::setBoard(std::vector<Space*> _board)
+{
+    board = _board;
+}
+
+
+void BoardManager::drawChanceCard()
+{
+    if (chanceDeck.empty())
+    {
+        std::cerr << "Chance deck is empty." << std::endl;
+        return;
+    }
+    std::shuffle(chanceDeck.begin(), chanceDeck.end(), std::default_random_engine(std::random_device()()));
+    std::unique_ptr<ChanceCard>& card = chanceDeck[0];
+    card->action(shared_from_this());
+}
+
+
+void BoardManager::drawCommunityChestCard()
+{
+    if (communityChestDeck.empty())
+    {
+        std::cerr << "Community Chest deck is empty." << std::endl;
+        return;
+    }
+    std::shuffle(communityChestDeck.begin(), communityChestDeck.end(), std::default_random_engine(std::random_device()()));
+    std::unique_ptr<CommunityChestCard>& card = communityChestDeck[0];
+    card->action(self);
+}
+
+std::vector<Space*> BoardManager::getBoard()
+{
+    return board;
+}
+
+void BoardManager::rollDice(std::mt19937& gen)
+{
+    currentDicesValue.first = dice1.roll(gen);
+    currentDicesValue.second = dice2.roll(gen);
+}
+
+void BoardManager::movePlayer(int distanceToGo)
+{
+    std::shared_ptr<Player> player = playerManager.getCurrentPlayer();
+    std::cout << "current position: " << player->getPosition() << std::endl;
+    std::cout << player->getName() << " is currently on " << board[player->getPosition()]->getName() << "." << std::endl;
+    if (player == nullptr){
+        std::cerr << "Player is null." << std::endl;
+        return;
+    }
+    int newPosition = (player->getPosition() + distanceToGo) % board.size();
+    std::cout << player->getName() << " moved to " << board[newPosition]->getName() << "." << std::endl;
+    if (newPosition < 0 || newPosition >= board.size()) {
+        // Handle out-of-bounds position
+        std::cerr << "New position is out of bounds." << std::endl;
+        return;
+    }
+    if(newPosition < player->getPosition() && player->getRemainingTurnsInJail() == 0){
+        std::cout << player->getName() << " passed by the Go space and earned 200." << std::endl;
+        playerManager.transferMoneyFromTo(nullptr, player, 200);
+    }
+    player->setPosition(newPosition);
+    handleSpace();
+}
+
+void BoardManager::affectProperty(std::shared_ptr<Player> player, Space* space)
+{
+    dynamic_cast<BuyableSpace*>(space)->setOwner(player);
+}
+
+void BoardManager::handleSpace()
+{
+    std::shared_ptr<Player> player = playerManager.getCurrentPlayer();
+    Space* space = board[player->getPosition()];
+    std::cout << player->getName() << " landed on " << space->getName() << "." << "\n" <<std::endl;
+    space->action(shared_from_this());
+}
+
+std::pair<int, int> BoardManager::getCurrentDicesValue()
+{
+    return currentDicesValue;
+}
