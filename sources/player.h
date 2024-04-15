@@ -23,7 +23,6 @@ private:
     int nbUtilitiesOwned = 0;
     int remainingTurnsInJail = 0;
     bool hasGetOutOfJailCard = false;
-    bool isBankrupt = false;
 public:
     Player(std::string _name);
     ~Player();
@@ -33,8 +32,6 @@ public:
     void setMoney(int _money);
     int getRemainingTurnsInJail() const;
     void setRemainingTurnsInJail(int _remainingTurnsInJail);
-    bool getIsBankrupt() const;
-    void setIsBankrupt(bool _isBankrupt);
     bool getHasGetOutOfJailCard() const;
     void setHasGetOutOfJailCard(bool _hasGetOutOfJailCard);
     int getNbStationsOwned() const;

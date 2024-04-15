@@ -15,16 +15,19 @@
 
 #include "managers.h"
 
+
+
+
 class GameCore
 {
     private:
         std::shared_ptr<BoardManager> boardManager;
         int consecutiveDoubles = 0;
     public:
-        GameCore(std::vector<Space*> spaces, std::vector<std::unique_ptr<CommunityChestCard>> communityChestCards, std::vector<std::unique_ptr<ChanceCard>> chanceCards);
+        GameCore(std::vector<std::shared_ptr<Space>>, std::vector<std::unique_ptr<CommunityChestCard>> communityChestCards, std::vector<std::unique_ptr<ChanceCard>> chanceCards);
         ~GameCore();
         void startGame();
-        void playTurn(std::mt19937& gen);
+        void playTurn();
 };
 
 #endif // GAMECORE_H

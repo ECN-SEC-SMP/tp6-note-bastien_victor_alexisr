@@ -20,26 +20,27 @@
 #include <random>
 #include <memory>
 
+// Forward declaration
+class Space; 
+class CommunityChestCard; 
+class ChanceCard; 
+
 class Dice
 {
     private:
         int value;
+        std::default_random_engine generator;
+        std::uniform_int_distribution<int> distribution;
     public:
         Dice();
         ~Dice();
-        int roll(std::mt19937& gen);
-        int getValue() const;
+        int roll();
 };
-
-class Space; // Forward declaration
-class CommunityChestCard; // Forward declaration
-class ChanceCard; // Forward declaration
 
 class PlayerManager
 {
     private:
         std::vector<std::shared_ptr<Player>> players;
-        int nbPlayers = 0; // Minimum 2 players and maximum 8 players
         std::shared_ptr<Player> currentPlayer;
     public:
         PlayerManager();
@@ -57,27 +58,25 @@ class PlayerManager
 class BoardManager : public std::enable_shared_from_this<BoardManager>
 {
     private:
-        std::shared_ptr<BoardManager> self; // self attribute needed to pass itself as a shared pointer in methods
         int nbHouses = 32;
         int nbHotels = 12;
-        std::vector<Space*> board;
+        std::vector<std::shared_ptr<Space>> board;
         std::vector<std::unique_ptr<ChanceCard>> chanceDeck;
         std::vector<std::unique_ptr<CommunityChestCard>> communityChestDeck;
-        PlayerManager playerManager;
+        std::shared_ptr<PlayerManager> playerManager;
         Dice dice1, dice2;
         std::pair<int, int> currentDicesValue;
     public:
-        BoardManager(std::vector<Space*> _board, std::vector<std::unique_ptr<CommunityChestCard>> _communityChestDeck, std::vector<std::unique_ptr<ChanceCard>> _chanceDeck);
+        BoardManager(std::vector<std::shared_ptr<Space>> _board, std::vector<std::unique_ptr<CommunityChestCard>> _communityChestDeck, std::vector<std::unique_ptr<ChanceCard>> _chanceDeck);
         ~BoardManager();
-        PlayerManager* getPlayerManager();   
-        std::vector<Space*> getBoard();
+        std::shared_ptr<PlayerManager> getPlayerManager();   
+        std::vector<std::shared_ptr<Space>> getBoard();
         std::pair<int, int> getCurrentDicesValue();
-        void rollDice(std::mt19937& gen);
-        void setBoard(std::vector<Space*> _board);
+        void rollDice();
         void drawChanceCard();
         void drawCommunityChestCard();
         void movePlayer(int diceValue);
-        void affectProperty(std::shared_ptr<Player> player, Space* space);
+        void affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space);
         void handleSpace();
 };
 

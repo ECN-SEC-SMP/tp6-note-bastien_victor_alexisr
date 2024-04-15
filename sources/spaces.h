@@ -19,7 +19,7 @@
 
 class BoardManager; // Forward declaration
 
-class Space
+class Space : public std::enable_shared_from_this<Space>
 {
     private:
         std::string name;
@@ -76,8 +76,9 @@ class Property : public BuyableSpace
     private:
         PropertyRent nbBuildings;
         Color color;
+        int housePrice;
     public:
-        Property(std::string _name, Color _color, int _price, std::vector<int> _rent);
+        Property(std::string _name, Color _color, int _price, int _housePrice, std::vector<int> _rent);
         ~Property();
         Color getColor() const;
         PropertyRent getNbBuildings() const;

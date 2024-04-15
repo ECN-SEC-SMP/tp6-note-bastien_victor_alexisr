@@ -13,40 +13,17 @@
 #include <iostream>
 
 
-Dice::Dice()
-{
-}
 
-Dice::~Dice()
-{
-}
-
-int Dice::roll(std::mt19937& gen)
-{
-    std::uniform_int_distribution<int> dist(1, 6);
-    value = dist(gen);
-    return value;
-}
-
-int Dice::getValue() const
-{
-    return value;
-}
-
-GameCore::GameCore(std::vector<Space*> spaces, std::vector<std::unique_ptr<CommunityChestCard>> communityChestCards, std::vector<std::unique_ptr<ChanceCard>> chanceCards)
+GameCore::GameCore(std::vector<std::shared_ptr<Space>> spaces, std::vector<std::unique_ptr<CommunityChestCard>> communityChestCards, std::vector<std::unique_ptr<ChanceCard>> chanceCards)
     : boardManager(std::make_shared<BoardManager>(spaces, std::move(communityChestCards), std::move(chanceCards)))
 {
-
+    // std::cout << "GameCore created." << std::endl;
 }
 
 GameCore::~GameCore()
 {
 }
 
-// BoardManager GameCore::getBoardManager()
-// {
-//     return boardManager;
-// }
 
 void GameCore::startGame()
 {
@@ -60,11 +37,11 @@ void GameCore::startGame()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Please enter a number." << std::endl;
-            std::cout << "Please enter the number of players (2-8): ";
+            std::cout << "Please enter the number of players (2-8): \n";
         }
         if (nbPlayers < 2 || nbPlayers > 8)
         {
-            std::cout << "Invalid number of players. Please enter a number between 2 and 8." << std::endl;
+            std::cout << "Invalid number of players. Please enter a number between 2 and 8.\n" << std::endl;
         }
     } while (nbPlayers < 2 || nbPlayers > 8);
 
@@ -78,20 +55,25 @@ void GameCore::startGame()
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Press Enter to start the game." << std::endl;
     std::cin.get();
+    while (boardManager->getPlayerManager()->getNbPlayers() > 1){
+        playTurn();
+    }
+    std::cout << "Game over!" << std::endl;
+    std::cout << "The winner is " << boardManager->getPlayerManager()->getPlayer(0)->getName() << "!" << std::endl;
+
 }
 
-void GameCore::playTurn(std::mt19937& gen)
+void GameCore::playTurn()
 {
-    if (boardManager->getPlayerManager()->getCurrentPlayer()->getIsBankrupt())
+    if (boardManager->getPlayerManager()->getCurrentPlayer() == nullptr)
     {
-        // TODO: Handle bankrupt player
         boardManager->getPlayerManager()->setNextPlayer();
         return;
     }
-    std::cout << "It is " << boardManager->getPlayerManager()->getCurrentPlayer()->getName() << "'s turn." << std::endl;
+    std::cout << "\nIt is " << boardManager->getPlayerManager()->getCurrentPlayer()->getName() << "'s turn (" << boardManager->getPlayerManager()->getCurrentPlayer()->getMoney() << "€)." << std::endl;
     std::cout << "Press Enter to roll the dice." << std::endl;
     std::cin.get();
-    boardManager->rollDice(gen);
+    boardManager->rollDice();
     std::pair<int, int> dicesValue = boardManager->getCurrentDicesValue();
     std::cout << "You rolled a " << dicesValue.first << " and a " << dicesValue.second << "." << std::endl;
     boardManager->movePlayer(dicesValue.first + dicesValue.second);
@@ -108,7 +90,7 @@ void GameCore::playTurn(std::mt19937& gen)
             return;
         }
         std::cout << "You rolled a double! You get to play again." << std::endl;
-        playTurn(gen);
+        playTurn();
     }
     else
     {

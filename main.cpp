@@ -13,50 +13,49 @@
 #include <iostream>
 
 
-std::vector<Space*> createBoard()
+std::vector<std::shared_ptr<Space>> createBoard()
 {
-    std::vector<Space*> board;
-    std::vector<int> propertyRent = {0, 0, 0, 0, 0, 0};
-    board.push_back(new Go());
-    board.push_back(new Property("Boulevard de Belleville", Color::PURPLE, 60, propertyRent));
-    board.push_back(new CommunityChest());
-    board.push_back(new Property("Rue Lecourbe", Color::PURPLE, 60, propertyRent));
-    board.push_back(new Tax("Impôt sur le revenu", 200));
-    board.push_back(new Station("Gare Montparnasse"));
-    board.push_back(new Property("Avenue de Vaugirard", Color::LIGHT_BLUE, 100, propertyRent));
-    board.push_back(new Chance());
-    board.push_back(new Property("Rue de Courcelles", Color::LIGHT_BLUE, 100, propertyRent));
-    board.push_back(new Property("Avenue de la République", Color::LIGHT_BLUE, 120, propertyRent));
-    board.push_back(new Jail());
-    board.push_back(new Property("Boulevard de la Villette", Color::PINK, 140, propertyRent));
-    board.push_back(new Utility("Compagnie de distribution d'électricité"));
-    board.push_back(new Property("Avenue de Neuilly", Color::PINK, 140, propertyRent));
-    board.push_back(new Property("Rue de Paradis", Color::PINK, 160, propertyRent));
-    board.push_back(new Station("Gare de Lyon"));
-    board.push_back(new Property("Avenue Mozart", Color::ORANGE, 180, propertyRent));
-    board.push_back(new CommunityChest());
-    board.push_back(new Property("Boulevard Saint-Michel", Color::ORANGE, 180, propertyRent));
-    board.push_back(new Property("Place Pigalle", Color::ORANGE, 200, propertyRent));
-    board.push_back(new FreeParking());
-    board.push_back(new Property("Avenue Matignon", Color::RED, 220, propertyRent));
-    board.push_back(new Chance());
-    board.push_back(new Property("Boulevard Malesherbes", Color::RED, 220, propertyRent));
-    board.push_back(new Property("Avenue Henri-Martin", Color::RED, 240, propertyRent));
-    board.push_back(new Station("Gare du Nord"));
-    board.push_back(new Property("Faubourg Saint-Honoré", Color::YELLOW, 260, propertyRent));
-    board.push_back(new Property("Place de la Bourse", Color::YELLOW, 260, propertyRent));
-    board.push_back(new Utility("Compagnie des eaux"));
-    board.push_back(new Property("Rue La Fayette", Color::YELLOW, 280, propertyRent));
-    board.push_back(new GoToJail());
-    board.push_back(new Property("Avenue de Breteuil", Color::GREEN, 300, propertyRent));
-    board.push_back(new Property("Avenue Foch", Color::GREEN, 300, propertyRent));
-    board.push_back(new CommunityChest());
-    board.push_back(new Property("Boulevard des Capucines", Color::GREEN, 320, propertyRent));
-    board.push_back(new Station("Gare Saint-Lazare"));
-    board.push_back(new Chance());  
-    board.push_back(new Property("Avenue des Champs-Élysées", Color::BLUE, 350, propertyRent));
-    board.push_back(new Tax("Taxe de luxe", 100));
-    board.push_back(new Property("Rue de la Paix", Color::BLUE, 400, propertyRent));
+    std::vector<std::shared_ptr<Space>> board;
+    board.push_back(std::make_shared<Go>());
+    board.push_back(std::make_shared<Property>("Boulevard de Belleville", Color::PURPLE, 60, 50, std::vector<int>({2, 4, 10, 30, 90, 160, 250})));
+    board.push_back(std::make_shared<CommunityChest>());
+    board.push_back(std::make_shared<Property>("Rue Lecourbe", Color::PURPLE, 60, 50, std::vector<int>({4, 8, 20, 60, 180, 320, 450})));
+    board.push_back(std::make_shared<Tax>("Impôt sur le revenu", 200));
+    board.push_back(std::make_shared<Station>("Gare Montparnasse"));
+    board.push_back(std::make_shared<Property>("Avenue de Vaugirard", Color::LIGHT_BLUE, 100, 50, std::vector<int>({6, 12, 30, 90, 270, 400, 550})));
+    board.push_back(std::make_shared<Chance>());
+    board.push_back(std::make_shared<Property>("Rue de Courcelles", Color::LIGHT_BLUE, 100, 50, std::vector<int>({6, 12, 30, 90, 270, 400, 550})));
+    board.push_back(std::make_shared<Property>("Avenue de la République", Color::LIGHT_BLUE, 120, 50, std::vector<int>({8, 16, 40, 100, 300, 450, 600})));
+    board.push_back(std::make_shared<Jail>());
+    board.push_back(std::make_shared<Property>("Boulevard de la Villette", Color::PINK, 140, 100, std::vector<int>({10, 20, 50, 150, 450, 625, 750})));
+    board.push_back(std::make_shared<Utility>("Compagnie de distribution d'électricité"));
+    board.push_back(std::make_shared<Property>("Avenue de Neuilly", Color::PINK, 140, 100, std::vector<int>({10, 20, 50, 150, 450, 625, 750})));
+    board.push_back(std::make_shared<Property>("Rue de Paradis", Color::PINK, 160, 100, std::vector<int>({12, 24, 60, 180, 500, 700, 900})));
+    board.push_back(std::make_shared<Station>("Gare de Lyon"));
+    board.push_back(std::make_shared<Property>("Avenue Mozart", Color::ORANGE, 180, 100, std::vector<int>({14, 28, 70, 200, 550, 750, 950})));
+    board.push_back(std::make_shared<CommunityChest>());
+    board.push_back(std::make_shared<Property>("Boulevard Saint-Michel", Color::ORANGE, 180, 100, std::vector<int>({14, 28, 70, 200, 550, 750, 950})));
+    board.push_back(std::make_shared<Property>("Place Pigalle", Color::ORANGE, 200, 100, std::vector<int>({16, 32, 80, 220, 600, 800, 1000})));
+    board.push_back(std::make_shared<FreeParking>());
+    board.push_back(std::make_shared<Property>("Avenue Matignon", Color::RED, 220, 150, std::vector<int>({18, 36, 90, 250, 700, 875, 1050})));
+    board.push_back(std::make_shared<Chance>());
+    board.push_back(std::make_shared<Property>("Boulevard Malesherbes", Color::RED, 220, 150, std::vector<int>({18, 36, 90, 250, 700, 875, 1050})));
+    board.push_back(std::make_shared<Property>("Avenue Henri-Martin", Color::RED, 240, 150, std::vector<int>({20, 40, 100, 300, 750, 925, 1100})));
+    board.push_back(std::make_shared<Station>("Gare du Nord"));
+    board.push_back(std::make_shared<Property>("Faubourg Saint-Honoré", Color::YELLOW, 260, 150, std::vector<int>({22, 44, 110, 330, 800, 975, 1150})));
+    board.push_back(std::make_shared<Property>("Place de la Bourse", Color::YELLOW, 260,  150, std::vector<int>({22, 44, 110, 330, 800, 975, 1150})));
+    board.push_back(std::make_shared<Utility>("Compagnie des eaux"));
+    board.push_back(std::make_shared<Property>("Rue La Fayette", Color::YELLOW, 280, 150, std::vector<int>({24, 48, 120, 360, 850, 1025, 1200})));
+    board.push_back(std::make_shared<GoToJail>());
+    board.push_back(std::make_shared<Property>("Avenue de Breteuil", Color::GREEN, 300, 200, std::vector<int>({26, 52, 130, 390, 900, 1100, 1275})));
+    board.push_back(std::make_shared<Property>("Avenue Foch", Color::GREEN, 300, 200, std::vector<int>({26, 52, 130, 390, 900, 1100, 1275})));
+    board.push_back(std::make_shared<CommunityChest>());
+    board.push_back(std::make_shared<Property>("Boulevard des Capucines", Color::GREEN, 320, 200, std::vector<int>({28, 56, 150, 450, 1000, 1200, 1400})));
+    board.push_back(std::make_shared<Station>("Gare Saint-Lazare"));
+    board.push_back(std::make_shared<Chance>());  
+    board.push_back(std::make_shared<Property>("Avenue des Champs-Élysées", Color::BLUE, 350, 200, std::vector<int>({35, 70, 175, 500, 1100, 1300, 1500})));
+    board.push_back(std::make_shared<Tax>("Taxe de luxe", 100));
+    board.push_back(std::make_shared<Property>("Rue de la Paix", Color::BLUE, 400, 200, std::vector<int>({50, 100, 200, 600, 1400, 1700, 2000})));
     return board;
 }
 
@@ -110,8 +109,7 @@ std::vector<std::unique_ptr<CommunityChestCard>> createCommunityChestDeck() {
         std::cin >> choice;
         if (choice == "y")
         {
-            // TODO: handle drawChanceCard
-            // board->getPlayerManager().drawChanceCard();
+            board->drawChanceCard();
         }
         else if (choice == "n")
         {
@@ -195,11 +193,11 @@ std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
         std::shared_ptr<Player> currentPlayer = board->getPlayerManager()->getCurrentPlayer();
         int nbHouses = 0;
         int nbHotels = 0;
-        for (Space* space : board->getBoard())
+        for (std::shared_ptr<Space> space : board->getBoard())
         {
-            if (dynamic_cast<Property*>(space))
+            if (dynamic_cast<Property*>(space.get()))
             {
-                Property* property = dynamic_cast<Property*>(space);
+                Property* property = dynamic_cast<Property*>(space.get());
                 if (property->getOwner() == currentPlayer)
                 {
                     if ((PropertyRent::FULL_STREET > property->getNbBuildings()) & (property->getNbBuildings() < PropertyRent::HOTEL))
@@ -285,14 +283,14 @@ std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
         std::shared_ptr<Player> currentPlayer = board->getPlayerManager()->getCurrentPlayer();
         int nbHouses = 0;
         int nbHotels = 0;
-        for (Space* space : board->getBoard())
+        for (std::shared_ptr<Space> space : board->getBoard())
         {
-            if (dynamic_cast<Property*>(space))
+            if (dynamic_cast<Property*>(space.get()))
             {
-                Property* property = dynamic_cast<Property*>(space);
+                Property* property = dynamic_cast<Property*>(space.get());
                 if (property->getOwner() == currentPlayer)
                 {
-                    if ((PropertyRent::FULL_STREET > property->getNbBuildings()) & (property->getNbBuildings() < PropertyRent::HOTEL))
+                    if ((PropertyRent::FULL_STREET > property->getNbBuildings()) && (property->getNbBuildings() < PropertyRent::HOTEL))
                     {
                         nbHouses += static_cast<int>(property->getNbBuildings()) - 1; // -1 because FULL_STREET is 1
                     }
@@ -338,16 +336,10 @@ std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
 
 int main()
 {
-    std::vector<Space*> board = createBoard();
+    std::vector<std::shared_ptr<Space>> board = createBoard();
     std::vector<std::unique_ptr<CommunityChestCard>> communityChestDeck = createCommunityChestDeck();
     std::vector<std::unique_ptr<ChanceCard>> chanceDeck = createChanceDeck();
     GameCore game(board, std::move(communityChestDeck), std::move(chanceDeck));
-    std::random_device rd;
-    std::mt19937 gen(rd());
     game.startGame();
-    for (int i = 0; i < 10; i++)
-    {
-        game.playTurn(gen);
-    }
     return 0;
 }

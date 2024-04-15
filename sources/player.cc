@@ -10,6 +10,7 @@
  */
 
 #include "player.h"
+#include <iostream>
 
 Player::Player(std::string _name) : name(_name)
 {
@@ -47,16 +48,6 @@ int Player::getRemainingTurnsInJail() const
 void Player::setRemainingTurnsInJail(int _remainingTurnsInJail)
 {
     remainingTurnsInJail = _remainingTurnsInJail;
-}
-
-bool Player::getIsBankrupt() const
-{
-    return isBankrupt;
-}
-
-void Player::setIsBankrupt(bool _isBankrupt)
-{
-    isBankrupt = _isBankrupt;
 }
 
 int Player::getNbStationsOwned() const

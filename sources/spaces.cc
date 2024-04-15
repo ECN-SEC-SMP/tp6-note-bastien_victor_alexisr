@@ -50,7 +50,6 @@ void BuyableSpace::setOwner(std::shared_ptr<Player> _owner)
 
 std::vector<int> BuyableSpace::getRent() const
 {
-    // Rent is calculated based on the dice roll made by the player
     return rent;
 }
 
@@ -87,7 +86,7 @@ std::string colorToString(Color color){
     }
 }
 
-Property::Property(std::string _name, Color _color, int _price, std::vector<int> _rent) : BuyableSpace(_name, _price, _rent), color(_color), nbBuildings(PropertyRent::NO_HOUSE)
+Property::Property(std::string _name, Color _color, int _price, int _housePrice, std::vector<int> _rent) : BuyableSpace(_name, _price, _rent), housePrice(_housePrice), color(_color), nbBuildings(PropertyRent::NO_HOUSE)
 {
 }
 
@@ -128,7 +127,7 @@ void Property::action(std::shared_ptr<BoardManager> board)
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, this);
+                board->affectProperty(player, shared_from_this());
                 std::cout << "You now own this property" << std::endl;
             }
         }
@@ -180,6 +179,7 @@ std::ostream& operator<<(std::ostream& os, const Property& property)
         }
         os << property.getRent()[i] << std::endl;
     }
+    os << "Property House Price: " << property.housePrice << std::endl;
     return os;
 }
 
@@ -219,12 +219,12 @@ void Station::action(std::shared_ptr<BoardManager> board)
         {
             if (player->getMoney() < getPrice())
             {
-                std::cout << "You don't have enough money to buy this stattion" << std::endl;
+                std::cout << "You don't have enough money to buy this station" << std::endl;
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, this);
+                board->affectProperty(player, shared_from_this());
                 std::cout << "You now own this this station" << std::endl;
                 player->setNbStationsOwned(player->getNbStationsOwned() + 1);
             }
@@ -300,7 +300,7 @@ void Utility::action(std::shared_ptr<BoardManager> board)
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, this);
+                board->affectProperty(player, shared_from_this());
                 std::cout << "You now own this utility" << std::endl;
                 player->setNbUtilitiesOwned(player->getNbUtilitiesOwned() + 1);
             }
@@ -376,7 +376,7 @@ void Jail::action(std::shared_ptr<BoardManager> board)
             {
                 player->setRemainingTurnsInJail(0);
                 player->setHasGetOutOfJailCard(false);
-                std::cout << "You are free to go" << std::endl;
+                std::cout << "You used your card and are free to go" << std::endl;
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 return;
             }
@@ -389,33 +389,38 @@ void Jail::action(std::shared_ptr<BoardManager> board)
             if (player->getMoney() < 50)
             {
                 std::cout << "You don't have enough money to pay the fine" << std::endl;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, 50);
                 player->setRemainingTurnsInJail(0);
                 std::cout << "You are free to go" << std::endl;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                return;
             }
         }
         else
         {
             std::cout << "Roll the dice and get a double to get out of jail" << std::endl;
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            board->rollDice(gen);
+            board->rollDice();
             std::pair<int, int> dicesValue = board->getCurrentDicesValue();
+            std::cout << "You rolled a " << dicesValue.first << " and a " << dicesValue.second << "." << std::endl;
             if (dicesValue.first == dicesValue.second)
             {
                 player->setRemainingTurnsInJail(0);
-                std::cout << "You are free to go" << std::endl;
+                std::cout << "You rolled a double are free to go!" << std::endl;
+                return;
+            }else{
+                std::cout << "You didn't get a double" << std::endl;
             }
         }
         player->setRemainingTurnsInJail(player->getRemainingTurnsInJail() - 1);
-
+        std::cout << "You have " << player->getRemainingTurnsInJail() << " turn(s) left in jail" << std::endl;
     }
     else
     {
-        std::cout << "You are free to go" << std::endl;
+        std::cout << "You have served your sentence and are free to go!" << std::endl;
     }
 } 
 
@@ -437,7 +442,7 @@ void GoToJail::action(std::shared_ptr<BoardManager> board)
 {
     std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
     std::cout << "You are going to jail" << std::endl;
-    player->setRemainingTurnsInJail(3);
+    player->setRemainingTurnsInJail(3); // TODO: Fix the fact that it seems like the counter is not working
     board->movePlayer(20);
 }
 
