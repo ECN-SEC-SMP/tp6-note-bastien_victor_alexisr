@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  * 
  */
+#pragma once
 
 #ifndef GAMECORE_H
 #define GAMECORE_H

@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  * 
  */
+#pragma once
 
 #ifndef MANAGERS_H
 #define MANAGERS_H

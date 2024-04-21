@@ -14,8 +14,7 @@
 
 // Test the creation of each type of space
 TEST(Space, Creation) {
-    std::vector<int> propertyRent = {0, 0, 0, 0, 0, 0};
-    Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, propertyRent);
+    Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, 50, std::vector<int>({2, 4, 10, 30, 90, 160, 250}));
     Station station1 = Station("Gare Montparnasse");
     Utility utility1 = Utility("Compagnie de distribution d'électricité");
     Tax tax1 = Tax("Impôt sur le revenu", 200);
@@ -42,7 +41,7 @@ TEST(Space, Creation) {
 // Test the getters of each type of space
 TEST(Space, Getters) {
     std::vector<int> propertyRent = {0, 0, 0, 0, 0, 0};
-    Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, propertyRent);
+    Property property1 = Property("Boulevard de Belleville", Color::PURPLE, 60, 50, std::vector<int>({2, 4, 10, 30, 90, 160, 250}));
     Station station1 = Station("Gare Montparnasse");
     Utility utility1 = Utility("Compagnie de distribution d'électricité");
     Tax tax1 = Tax("Impôt sur le revenu", 200);

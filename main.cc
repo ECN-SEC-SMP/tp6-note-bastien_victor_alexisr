@@ -11,7 +11,10 @@
 
 #include "sources/gamecore.h"
 #include <iostream>
-
+#include "utils/input_manager.h"
+// #include "spdlog/spdlog.h"
+// #include "spdlog/sinks/basic_file_sink.h" 
+// #include "spdlog/sinks/stdout_color_sinks.h"
 
 std::vector<std::shared_ptr<Space>> createBoard()
 {
@@ -104,14 +107,12 @@ std::vector<std::unique_ptr<CommunityChestCard>> createCommunityChestDeck() {
     deck.push_back(std::make_unique<CommunityChestCard> ("Payez une amende de 10€ ou tirez une carte Chance", 
     [](std::shared_ptr<BoardManager> board){
         std::shared_ptr<Player> currentPlayer = board->getPlayerManager()->getCurrentPlayer();
-        std::cout << "Do you want to draw a Chance card? (y/n)" << std::endl;
-        std::string choice;
-        std::cin >> choice;
-        if (choice == "y")
+        char choice = getYesNo("Do you want to draw a Chance card? (y/n)");
+        if (choice == 'y')
         {
             board->drawChanceCard();
         }
-        else if (choice == "n")
+        else if (choice == 'n')
         {
             board->getPlayerManager()->transferMoneyFromTo(currentPlayer, nullptr, 10);
         }
@@ -336,6 +337,21 @@ std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
 
 int main()
 {
+    // try 
+    // {       
+    //     auto console_logger = spdlog::stdout_color_mt("console");
+    //     spdlog::set_default_logger(console_logger);
+    //     spdlog::set_pattern("[%H:%M:%S] [%^%l%$] %v");
+    //     #ifdef DEBUG
+    //         spdlog::set_level(spdlog::level::debug);
+    //     #else
+    //         spdlog::set_level(spdlog::level::info);
+    //     #endif
+    // }
+    // catch (const spdlog::spdlog_ex& ex)
+    // {
+    //     std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    // }
     std::vector<std::shared_ptr<Space>> board = createBoard();
     std::vector<std::unique_ptr<CommunityChestCard>> communityChestDeck = createCommunityChestDeck();
     std::vector<std::unique_ptr<ChanceCard>> chanceDeck = createChanceDeck();

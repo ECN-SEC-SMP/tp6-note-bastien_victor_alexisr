@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  * 
  */
+#pragma once
 
 #ifndef CARDS_H
 #define CARDS_H

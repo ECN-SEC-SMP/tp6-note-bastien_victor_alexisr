@@ -11,6 +11,7 @@
 
 #include "spaces.h"
 #include <iostream>
+#include "../utils/input_manager.h"
 
 Space::Space(std::string _name) : name(_name)
 {
@@ -115,9 +116,8 @@ void Property::action(std::shared_ptr<BoardManager> board)
     {
         std::cout << "This property is not owned" << std::endl;
         std::cout << *this << std::endl;
-        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
-        char answer;
-        std::cin >> answer;
+        std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + " ? [y/n]";
+        char answer = getYesNo(message);
         if (answer == 'y')
         {
             if (player->getMoney() < getPrice())
@@ -135,8 +135,6 @@ void Property::action(std::shared_ptr<BoardManager> board)
         {
             // Auction
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
     }
 }
 
@@ -212,9 +210,8 @@ void Station::action(std::shared_ptr<BoardManager> board)
     {
         std::cout << "This station is not owned" << std::endl;
         std::cout << *this << std::endl;
-        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
-        char answer;
-        std::cin >> answer;
+        std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + " ? [y/n]";
+        char answer = getYesNo(message);
         if (answer == 'y')
         {
             if (player->getMoney() < getPrice())
@@ -233,7 +230,6 @@ void Station::action(std::shared_ptr<BoardManager> board)
         {
             // Auction
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
@@ -288,9 +284,8 @@ void Utility::action(std::shared_ptr<BoardManager> board)
     {
         std::cout << "This utility is not owned" << std::endl;
         std::cout << *this << std::endl;
-        std::cout << "Do you want to buy it for " << getPrice() << " ? [y/n]" << std::endl;
-        char answer;
-        std::cin >> answer;
+        std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + " ? [y/n]";
+        char answer = getYesNo(message);
         if (answer == 'y')
         {
             if (player->getMoney() < getPrice())
@@ -309,8 +304,6 @@ void Utility::action(std::shared_ptr<BoardManager> board)
         {
             // Auction
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
     }
 }
 
@@ -369,34 +362,29 @@ void Jail::action(std::shared_ptr<BoardManager> board)
         std::cout << "You are stuck in jail for " << player->getRemainingTurnsInJail() << " turn(s)" << std::endl;
         if (player->getHasGetOutOfJailCard())
         {
-            std::cout << "Do you want to use your Get Out of Jail Free card? [y/n]" << std::endl;
-            char answer;
-            std::cin >> answer;
+            std::string message = "Do you want to use your Get Out of Jail Free card? [y/n]";
+            char answer = getYesNo(message);
             if (answer == 'y')
             {
                 player->setRemainingTurnsInJail(0);
                 player->setHasGetOutOfJailCard(false);
                 std::cout << "You used your card and are free to go" << std::endl;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 return;
             }
         }
-        std::cout << "Do you want to pay 50 to get out of jail? [y/n]" << std::endl;
-        char answer;
-        std::cin >> answer;
+        std::string message = "Do you want to pay 50 to get out of jail? [y/n]";
+        char answer = getYesNo(message);
         if (answer == 'y')
         {
             if (player->getMoney() < 50)
             {
                 std::cout << "You don't have enough money to pay the fine" << std::endl;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, 50);
                 player->setRemainingTurnsInJail(0);
                 std::cout << "You are free to go" << std::endl;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 return;
             }
         }
