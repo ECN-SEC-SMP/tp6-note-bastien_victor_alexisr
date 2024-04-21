@@ -76,7 +76,7 @@ TEST(Space, Getters) {
     EXPECT_EQ(tax1.getAmount(), 200);
 
     // Check if the number of buildings is correct
-    EXPECT_EQ(property1.getNbBuildings(), PropertyRent::NO_HOUSE);
+    EXPECT_EQ(property1.getNbBuildings(), PropertyRent::BASE_RENT);
     property1.setNbBuildings(PropertyRent::ONE_HOUSE);
     EXPECT_EQ(property1.getNbBuildings(), PropertyRent::ONE_HOUSE);
 

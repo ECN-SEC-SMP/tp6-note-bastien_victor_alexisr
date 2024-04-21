@@ -10,6 +10,7 @@
  */
 
 #include "managers.h"
+#include <memory>
 
 Dice::Dice() : generator(std::random_device()()), distribution(1, 6) 
 {
@@ -115,7 +116,12 @@ BoardManager::~BoardManager()
 BoardManager::BoardManager(std::vector<std::shared_ptr<Space>> _board, std::vector<std::unique_ptr<CommunityChestCard>> _communityChestDeck, std::vector<std::unique_ptr<ChanceCard>> _chanceDeck)
     : board(_board), chanceDeck(std::move(_chanceDeck)), communityChestDeck(std::move(_communityChestDeck)), playerManager(std::make_shared<PlayerManager>())
 {
-    // std::cout << "BoardManager created at address: " << this << std::endl;
+    for (auto space : board) {
+        if (auto property = std::dynamic_pointer_cast<Property>(space)) {
+            Color color = property->getColor();
+            properties[color].push_back(property);
+        }
+    }
 }
 
 std::shared_ptr<PlayerManager> BoardManager::getPlayerManager()
@@ -132,7 +138,17 @@ void BoardManager::drawChanceCard()
     }
     std::shuffle(chanceDeck.begin(), chanceDeck.end(), std::default_random_engine(std::random_device()()));
     std::unique_ptr<ChanceCard>& card = chanceDeck[0];
+    if ((card->getDescription().find("Get Out of Jail Free") != std::string::npos) && chanceGOJFCTaken)
+    {
+        drawChanceCard();
+        return;
+    }
     card->action(shared_from_this());
+}
+
+void BoardManager::setChanceGOJFCTaken(bool taken)
+{
+    chanceGOJFCTaken = taken;
 }
 
 
@@ -145,12 +161,48 @@ void BoardManager::drawCommunityChestCard() //TODO: if a player has a get ouf of
     }
     std::shuffle(communityChestDeck.begin(), communityChestDeck.end(), std::default_random_engine(std::random_device()()));
     std::unique_ptr<CommunityChestCard>& card = communityChestDeck[0];
+    if ((card->getDescription().find("Get Out of Jail Free") != std::string::npos) && chanceGOJFCTaken)
+    {
+        drawCommunityChestCard();
+        return;
+    }
     card->action(shared_from_this());
+}
+
+void BoardManager::setCommunityChestGOJFCTaken(bool taken)
+{
+    communityChestGOJFCTaken = taken;
 }
 
 std::vector<std::shared_ptr<Space>> BoardManager::getBoard()
 {
     return board;
+}
+
+std::vector<std::shared_ptr<Property>> BoardManager::getOwnedGroups(std::shared_ptr<Player>player){
+  std::vector<std::shared_ptr<Property>> owned_properties;
+
+  for (const auto& [color, propertyList] : properties) {
+      std::shared_ptr<Player> owner = player;
+      bool sameOwner = true;
+
+      for (const auto& property : propertyList) {
+          if (property->getOwner() != owner) {
+              sameOwner = false;
+              break;
+          }
+      }
+
+      if (sameOwner) {
+          for(auto property : propertyList) {
+              if (property->getNbBuildings() < PropertyRent::FULL_GROUP){
+                 property->setNbBuildings(PropertyRent::FULL_GROUP);
+              }
+              owned_properties.push_back(property);
+          }
+      }
+  }
+  return owned_properties;
 }
 
 void BoardManager::rollDice()
@@ -170,7 +222,7 @@ void BoardManager::movePlayer(int distanceToGo)//TODO: handle bug when a player 
     }
     int newPosition = (player->getPosition() + distanceToGo) % board.size();
     // std::cout << player->getName() << " moved to " << board[newPosition]->getName() << "." << std::endl;
-    if (newPosition < 0 || newPosition >= board.size()) {
+    if ((newPosition < 0) || (newPosition >= static_cast<int>(board.size()))) {
         // Handle out-of-bounds position
         std::cerr << "New position is out of bounds." << std::endl;
         return;
@@ -179,20 +231,24 @@ void BoardManager::movePlayer(int distanceToGo)//TODO: handle bug when a player 
         std::cout << player->getName() << " passed by the Go space and earned 200." << std::endl;
         playerManager->transferMoneyFromTo(nullptr, player, 200);
     }
+    std::cout << "Moving player... " << std::endl;
     player->setPosition(newPosition);
     handleSpace();
 }
 
 void BoardManager::affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space)
 {
-    dynamic_cast<BuyableSpace*>(space.get())->setOwner(player);
+    std::shared_ptr<BuyableSpace> buyableSpace = std::dynamic_pointer_cast<BuyableSpace>(space);
+    if (buyableSpace != nullptr) {
+        buyableSpace->setOwner(player);
+    }
 }
 
 void BoardManager::handleSpace()
 {
     std::shared_ptr<Player> player = playerManager->getCurrentPlayer();
     std::shared_ptr<Space> space = board[player->getPosition()];
-    std::cout << player->getName() << " landed on " << space->getName() << " (" << player->getPosition() << ")." << std::endl;
+    std::cout << player->getName() << " is now on " << space->getName() << " (" << player->getPosition() << ")." << std::endl;
     space->action(shared_from_this());
 }
 

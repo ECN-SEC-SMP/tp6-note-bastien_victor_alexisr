@@ -23,7 +23,8 @@ private:
     int nbStationsOwned = 0;
     int nbUtilitiesOwned = 0;
     int remainingTurnsInJail = 0;
-    bool hasGetOutOfJailCard = false;
+    bool hasChanceGOJFC = false; // GOJFC = Get Out of Jail Free Card
+    bool hasCommunityChestGOJFC = false; // GOJFC = Get Out of Jail Free Card
 public:
     Player(std::string _name);
     ~Player();
@@ -33,8 +34,10 @@ public:
     void setMoney(int _money);
     int getRemainingTurnsInJail() const;
     void setRemainingTurnsInJail(int _remainingTurnsInJail);
-    bool getHasGetOutOfJailCard() const;
-    void setHasGetOutOfJailCard(bool _hasGetOutOfJailCard);
+    bool getHasChanceGOJFC() const;
+    void setHasChanceGOJFC(bool _hasChanceGOJFC);
+    bool getHasCommunityChestGOJFC() const;
+    void setHasCommunityChestGOJFC(bool _hasCommunityChestGOJFC);
     int getNbStationsOwned() const;
     void setNbStationsOwned(int _nbStationsOwned);
     int getNbUtilitiesOwned() const;

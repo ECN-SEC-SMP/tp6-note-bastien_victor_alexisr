@@ -63,8 +63,8 @@ enum class Color
 
 enum class PropertyRent
 {
-    NO_HOUSE,
-    FULL_STREET,
+    BASE_RENT, 
+    FULL_GROUP, 
     ONE_HOUSE,
     TWO_HOUSES,
     THREE_HOUSES,

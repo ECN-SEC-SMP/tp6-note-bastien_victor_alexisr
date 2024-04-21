@@ -60,14 +60,24 @@ void Player::setNbStationsOwned(int _nbStationsOwned)
     nbStationsOwned = _nbStationsOwned;
 }
 
-bool Player::getHasGetOutOfJailCard() const
+bool Player::getHasChanceGOJFC() const
 {
-    return hasGetOutOfJailCard;
+    return hasChanceGOJFC;
 }
 
-void Player::setHasGetOutOfJailCard(bool _hasGetOutOfJailCard)
+void Player::setHasChanceGOJFC(bool _hasChanceGOJFC)
 {
-    hasGetOutOfJailCard = _hasGetOutOfJailCard;
+    hasChanceGOJFC = _hasChanceGOJFC;
+}
+
+bool Player::getHasCommunityChestGOJFC() const
+{
+    return hasCommunityChestGOJFC;
+}
+
+void Player::setHasCommunityChestGOJFC(bool _hasCommunityChestGOJFC)
+{
+    hasCommunityChestGOJFC = _hasCommunityChestGOJFC;
 }
 
 int Player::getNbUtilitiesOwned() const

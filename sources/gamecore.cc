@@ -63,6 +63,11 @@ void GameCore::playTurn()
         return;
     }
     std::cout << "\nIt is " << boardManager->getPlayerManager()->getCurrentPlayer()->getName() << "'s turn (" << boardManager->getPlayerManager()->getCurrentPlayer()->getMoney() << "€)." << std::endl;
+    if (boardManager->getPlayerManager()->getCurrentPlayer()->getRemainingTurnsInJail() > 0){
+        boardManager->handleSpace();
+        boardManager->getPlayerManager()->setNextPlayer();
+        return;
+    }
     getEnter("Press Enter to roll the dice.");
     boardManager->rollDice();
     std::pair<int, int> dicesValue = boardManager->getCurrentDicesValue();
@@ -85,6 +90,14 @@ void GameCore::playTurn()
     }
     else
     {
+        std::vector<std::shared_ptr<Property>> owned_groups = boardManager->getOwnedGroups(boardManager->getPlayerManager()->getCurrentPlayer());
+        if (owned_groups.size() > 0){
+            std::cout << "You can build on the following properties:" << std::endl;
+            for (const auto& property : owned_groups)
+            {
+              std::cout << property->getName() << std::endl;
+            }
+        }
         boardManager->getPlayerManager()->setNextPlayer();
         consecutiveDoubles = 0;
     }

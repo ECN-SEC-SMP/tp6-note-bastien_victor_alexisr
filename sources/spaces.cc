@@ -87,7 +87,7 @@ std::string colorToString(Color color){
     }
 }
 
-Property::Property(std::string _name, Color _color, int _price, int _housePrice, std::vector<int> _rent) : BuyableSpace(_name, _price, _rent), housePrice(_housePrice), color(_color), nbBuildings(PropertyRent::NO_HOUSE)
+Property::Property(std::string _name, Color _color, int _price, int _housePrice, std::vector<int> _rent) : BuyableSpace(_name, _price, _rent), housePrice(_housePrice), color(_color), nbBuildings(PropertyRent::BASE_RENT)
 {
 }
 
@@ -163,17 +163,18 @@ std::ostream& operator<<(std::ostream& os, const Property& property)
     for (int i = 0; i < property.getRent().size() - 1; i++)
     {
         os << "     With ";
-        if (i == 0)
-        {
-            os << "no house: ";
-        }
-        else if (i == 5)
-        {
-            os << "a hotel: ";
-        }
-        else
-        {
-            os << i << " house(s): ";
+        switch(i){
+          case 0:
+                os << "base rent: ";
+                break;
+          case 1:
+                os << "full group ";
+                break;
+          case 2: case 3: case 4: case 5:
+                os << i << " house(s): ";
+                break;
+          case 6:
+                os << "a hotel: ";
         }
         os << property.getRent()[i] << std::endl;
     }
@@ -275,7 +276,7 @@ void Utility::action(std::shared_ptr<BoardManager> board)
         // Pay rent
         std::cout << "This utility is owned by " << getOwner()->getName() << std::endl;
         std::pair<int, int> dicesValue = board->getCurrentDicesValue();
-        std::cout << "You rolled a " << dicesValue.first + dicesValue.second << std::endl;
+        std::cout << "The rent is (" << dicesValue.first << " + " << dicesValue.second << ") * " << (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10) << std::endl;
         int rent = (dicesValue.first + dicesValue.second) * (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10);
         std::cout << player->getName() << " needs to pay " << rent << " to " << getOwner()->getName() << std::endl;
         board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
@@ -360,14 +361,23 @@ void Jail::action(std::shared_ptr<BoardManager> board)
     if (player->getRemainingTurnsInJail() > 0)
     {
         std::cout << "You are stuck in jail for " << player->getRemainingTurnsInJail() << " turn(s)" << std::endl;
-        if (player->getHasGetOutOfJailCard())
+        if (player->getHasChanceGOJFC() || player->getHasCommunityChestGOJFC())
         {
             std::string message = "Do you want to use your Get Out of Jail Free card? [y/n]";
             char answer = getYesNo(message);
             if (answer == 'y')
             {
                 player->setRemainingTurnsInJail(0);
-                player->setHasGetOutOfJailCard(false);
+                if (player->getHasChanceGOJFC())
+                {
+                    player->setHasChanceGOJFC(false);
+                    board->setChanceGOJFCTaken(false);
+                }
+                else
+                {
+                    player->setHasCommunityChestGOJFC(false);
+                    board->setCommunityChestGOJFCTaken(false);
+                }
                 std::cout << "You used your card and are free to go" << std::endl;
                 return;
             }
@@ -408,7 +418,7 @@ void Jail::action(std::shared_ptr<BoardManager> board)
     }
     else
     {
-        std::cout << "You have served your sentence and are free to go!" << std::endl;
+        std::cout << "You are free to go!" << std::endl;
     }
 } 
 

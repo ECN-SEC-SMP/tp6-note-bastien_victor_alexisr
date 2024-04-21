@@ -20,9 +20,12 @@
 #include <optional>
 #include <random>
 #include <memory>
+#include <map>
 
 // Forward declaration
 class Space; 
+class Property;
+enum class Color;
 class CommunityChestCard; 
 class ChanceCard; 
 
@@ -62,8 +65,11 @@ class BoardManager : public std::enable_shared_from_this<BoardManager>
         int nbHouses = 32;
         int nbHotels = 12;
         std::vector<std::shared_ptr<Space>> board;
+        std::map<Color, std::vector<std::shared_ptr<Property>>> properties;
         std::vector<std::unique_ptr<ChanceCard>> chanceDeck;
+        bool chanceGOJFCTaken = false; // Get Out of Jail Free card taken from the Chance deck
         std::vector<std::unique_ptr<CommunityChestCard>> communityChestDeck;
+        bool communityChestGOJFCTaken = false; // Get Out of Jail Free card taken from the Community Chest deck 
         std::shared_ptr<PlayerManager> playerManager;
         Dice dice1, dice2;
         std::pair<int, int> currentDicesValue;
@@ -72,10 +78,13 @@ class BoardManager : public std::enable_shared_from_this<BoardManager>
         ~BoardManager();
         std::shared_ptr<PlayerManager> getPlayerManager();   
         std::vector<std::shared_ptr<Space>> getBoard();
+        std::vector<std::shared_ptr<Property>> getOwnedGroups(std::shared_ptr<Player> player);
         std::pair<int, int> getCurrentDicesValue();
         void rollDice();
         void drawChanceCard();
+        void setChanceGOJFCTaken(bool taken);
         void drawCommunityChestCard();
+        void setCommunityChestGOJFCTaken(bool taken);
         void movePlayer(int diceValue);
         void affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space);
         void handleSpace();
