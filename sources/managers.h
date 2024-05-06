@@ -87,6 +87,7 @@ class BoardManager : public std::enable_shared_from_this<BoardManager>
         void setCommunityChestGOJFCTaken(bool taken);
         void movePlayer(int diceValue);
         void affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space);
+        void buildOnProperties(std::vector<std::shared_ptr<Property>> properties, int attempts = 0);
         void handleSpace();
 };
 

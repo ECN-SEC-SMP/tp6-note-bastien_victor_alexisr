@@ -10,6 +10,7 @@
  */
 
 #include "cards.h"
+#include "spdlog/spdlog.h"
 
 
 Card::Card(std::string _description) : description(_description) {}
@@ -33,7 +34,7 @@ void CommunityChestCard::action(std::shared_ptr<BoardManager> board)
 {
     if (_actionFunction)
     {
-        std::cout << "Community Chest Card: " << getDescription() << std::endl;
+        spdlog::info("Community Chest Card: {0}", getDescription());
         _actionFunction(board);
     }
 }
@@ -56,7 +57,7 @@ void ChanceCard::action(std::shared_ptr<BoardManager>  board)
 {
     if (_actionFunction)
     {
-        std::cout << "Chance Card: " << getDescription() << std::endl;
+        spdlog::info("Chance Card: {0}", getDescription());
         _actionFunction(board);
     }
 }

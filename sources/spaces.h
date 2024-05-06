@@ -59,17 +59,15 @@ enum class Color
     BLUE
 };
 
-
-
 enum class PropertyRent
 {
-    BASE_RENT, 
     FULL_GROUP, 
     ONE_HOUSE,
     TWO_HOUSES,
     THREE_HOUSES,
     FOUR_HOUSES,
-    HOTEL
+    HOTEL,
+    BASE_RENT
 };
 
 class Property : public BuyableSpace
@@ -81,7 +79,9 @@ class Property : public BuyableSpace
     public:
         Property(std::string _name, Color _color, int _price, int _housePrice, std::vector<int> _rent);
         ~Property();
+        int getHousePrice() const;
         Color getColor() const;
+        std::string getColorString() const;
         PropertyRent getNbBuildings() const;
         void setNbBuildings(PropertyRent _nbBuildings); 
         void action(std::shared_ptr<BoardManager> board) override;
