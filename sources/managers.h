@@ -62,8 +62,6 @@ class PlayerManager
 class BoardManager : public std::enable_shared_from_this<BoardManager>
 {
     private:
-        int nbHouses = 32;
-        int nbHotels = 12;
         std::vector<std::shared_ptr<Space>> board;
         std::map<Color, std::vector<std::shared_ptr<Property>>> properties;
         std::vector<std::unique_ptr<ChanceCard>> chanceDeck;
@@ -86,7 +84,8 @@ class BoardManager : public std::enable_shared_from_this<BoardManager>
         void drawCommunityChestCard();
         void setCommunityChestGOJFCTaken(bool taken);
         void movePlayer(int diceValue);
-        void affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space);
+        void affectOwnership(std::shared_ptr<Player> player, std::shared_ptr<Space> space);
+        void buildOnProperties(std::vector<std::shared_ptr<Property>> properties, std::shared_ptr<Player> player,  int attempts = 0);
         void handleSpace();
 };
 
