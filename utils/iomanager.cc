@@ -56,7 +56,11 @@
 #else
     void getEnter(std::string message){
         spdlog::info(message);
-        std::cin.get();
+        std::string input;
+        std::getline(std::cin, input);
+        if (!input.empty()) {
+            spdlog::warn("Invalid input. Ignoring entered value.");
+        }
     }
 
     int getNumber(std::string message, int min, int max){

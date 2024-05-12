@@ -101,8 +101,7 @@ void PlayerManager::transferMoneyFromTo(std::shared_ptr<Player> player1, std::sh
         if (player1->getMoney() < 0)
         {
             player1->setMoney(0);
-            spdlog::info("{0} is bankrupt.", player1->getName());
-            removePlayer(player1);
+            spdlog::debug("{0} has gone bankrupt while trying to transfer money. The transfer has however been completed by adding the missing money from the bank.", player1->getName());
         }
     }
     if (player2 != nullptr)
@@ -158,7 +157,7 @@ void BoardManager::setChanceGOJFCTaken(bool taken)
 }
 
 
-void BoardManager::drawCommunityChestCard() //TODO: if a player has a get ouf of jail card, make it unobtainable in the deck until it is used and then put it back in the deck
+void BoardManager::drawCommunityChestCard() 
 {
     if (communityChestDeck.empty())
     {
@@ -217,7 +216,7 @@ void BoardManager::rollDice()
     currentDicesValue.second = dice2.roll();
 }
 
-void BoardManager::movePlayer(int distanceToGo)//TODO: handle bug when a player goes back 3 spaces with chanceCard
+void BoardManager::movePlayer(int distanceToGo)
 {
     std::shared_ptr<Player> player = playerManager->getCurrentPlayer();
     spdlog::debug("{0} is currently on {1}.", player->getName(), board[player->getPosition()]->getName());
@@ -241,7 +240,7 @@ void BoardManager::movePlayer(int distanceToGo)//TODO: handle bug when a player 
     handleSpace();
 }
 
-void BoardManager::affectProperty(std::shared_ptr<Player> player, std::shared_ptr<Space> space)
+void BoardManager::affectOwnership(std::shared_ptr<Player> player, std::shared_ptr<Space> space)
 {
     std::shared_ptr<BuyableSpace> buyableSpace = std::dynamic_pointer_cast<BuyableSpace>(space);
     if (buyableSpace != nullptr) {
@@ -249,9 +248,10 @@ void BoardManager::affectProperty(std::shared_ptr<Player> player, std::shared_pt
     }
 }
 
-void BoardManager::buildOnProperties(std::vector<std::shared_ptr<Property>> properties, int attempts)
+void BoardManager::buildOnProperties(std::vector<std::shared_ptr<Property>> properties, std::shared_ptr<Player> player, int attempts)
 {
-    if (attempts > 10) {
+    if (attempts > 50) {
+        spdlog::debug("Exiting to avoid infinite loop.");
         spdlog::error("Too many attempts. Exiting.");
         return;
     }
@@ -259,11 +259,15 @@ void BoardManager::buildOnProperties(std::vector<std::shared_ptr<Property>> prop
     std::map<std::shared_ptr<Property>, int> buildingsPerProperty;
     int minBuildings = INT_MAX;
     int maxBuildings = INT_MIN;
+    int totalBuildings = 0;
 
+    spdlog::info("With the money you currently have, you can build up to {0} buildings in total.", player->getMoney() / properties[0]->getHousePrice());
+    
     for (const auto& property : properties) {
         int currentBuildings = static_cast<int>(property->getNbBuildings());
-        int newBuildings = getNumber("Enter the number of additional buildings you want to build on " + property->getName() + ": ", 0, 5 - currentBuildings);
-        int totalBuildings = currentBuildings + newBuildings;
+        int maxTheoretical = std::min(5 - currentBuildings, player->getMoney() / properties[0]->getHousePrice());
+        int newBuildings = getNumber("Enter the number of additional buildings you want to build on " + property->getName() + ": ", 0, maxTheoretical);
+        totalBuildings = currentBuildings + newBuildings;
         spdlog::debug("Theoretical number of buildings: {0}.", totalBuildings);
         if (totalBuildings == 5) {
             spdlog::info("You have chosen to build a hotel on {0}.", property->getName());
@@ -277,11 +281,17 @@ void BoardManager::buildOnProperties(std::vector<std::shared_ptr<Property>> prop
 
     if (maxBuildings - minBuildings > 1) {
         spdlog::error("There is a difference of more than 1 building between some properties.");
-        return buildOnProperties(properties, attempts + 1);
+        return buildOnProperties(properties, player, attempts + 1);
+    }
+
+    if (totalBuildings * properties[0]->getHousePrice() > player->getMoney()) {
+        spdlog::error("You don't have enough money to build all these properties.");
+        return;
     }
 
     for (const auto& [property, totalBuildings] : buildingsPerProperty) {
         property->setNbBuildings(static_cast<PropertyRent>(totalBuildings));
+
         spdlog::info("{0} now has {1} {2}.", property->getName(), totalBuildings == 5 ? 1 : totalBuildings, totalBuildings == 5 ? "hotel" : "house(s)");
     }
 }

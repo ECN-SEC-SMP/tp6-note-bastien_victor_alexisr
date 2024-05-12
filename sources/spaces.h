@@ -45,6 +45,7 @@ class BuyableSpace : public Space
         void setOwner(std::shared_ptr<Player> _owner);
         std::vector<int> getRent() const;
         virtual void action(std::shared_ptr<BoardManager> board)  = 0;
+        virtual void auction(std::shared_ptr<BoardManager> board) = 0;
 };
 
 enum class Color
@@ -85,6 +86,7 @@ class Property : public BuyableSpace
         PropertyRent getNbBuildings() const;
         void setNbBuildings(PropertyRent _nbBuildings); 
         void action(std::shared_ptr<BoardManager> board) override;
+        void auction(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Property& property);
 };
 
@@ -97,6 +99,7 @@ class Station : public BuyableSpace
         Station(std::string _name); 
         ~Station();
         void action(std::shared_ptr<BoardManager> board) override;
+        void auction(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Station& station);
 };
 
@@ -108,6 +111,7 @@ class Utility : public BuyableSpace
         Utility(std::string _name);
         ~Utility();
         void action(std::shared_ptr<BoardManager> board) override;
+        void auction(std::shared_ptr<BoardManager> board) override;
         friend std::ostream& operator<<(std::ostream& os, const Utility& utility);
 };
 

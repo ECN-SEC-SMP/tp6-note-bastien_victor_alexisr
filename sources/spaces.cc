@@ -60,31 +60,31 @@ std::string colorToString(Color color){
     switch (color)
     {
     case Color::PURPLE:
-        return "Purple";
+        return "purple";
         break;
     case Color::LIGHT_BLUE:
-        return "Light Blue";
+        return "light blue";
         break;
     case Color::PINK:
-        return "Pink";
+        return "pink";
         break;
     case Color::ORANGE:
-        return "Orange";
+        return "orange";
         break;
     case Color::RED:
-        return "Red";
+        return "red";
         break;
     case Color::YELLOW:
-        return "Yellow";
+        return "yellow";
         break;
     case Color::GREEN:
-        return "Green";
+        return "green";
         break;
     case Color::BLUE:
-        return "Blue";
+        return "blue";
         break;
     default:
-        return "Unknown";
+        return "unknown";
         break;
     }
 }
@@ -114,7 +114,7 @@ void Property::action(std::shared_ptr<BoardManager> board)
         // TODO: Implement the reset of a property that was owned by a now bankrupt player
         spdlog::info("This property is owned by {0}", getOwner()->getName());
         int rent = getRent()[static_cast<int>(nbBuildings)];
-        spdlog::info("{0} needs to pay {1} to {2}", player->getName(), rent, getOwner()->getName());
+        spdlog::info("{0} needs to pay {1}€ to {2}", player->getName(), rent, getOwner()->getName());
         board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
 
     }
@@ -129,19 +129,61 @@ void Property::action(std::shared_ptr<BoardManager> board)
             if (player->getMoney() < getPrice())
             {
                 spdlog::info("You don't have enough money to buy this property");
+                auction(board);
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, shared_from_this());
+                board->affectOwnership(player, shared_from_this());
                 spdlog::info("You now own this property");
             }
         }
         else
         {
-            // Auction
+            auction(board);
         }
     }
+}
+
+void Property::auction(std::shared_ptr<BoardManager> board)
+{
+    spdlog::info("You decided not to buy this property and it will now be auctioned");
+    std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
+    for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
+    {
+        auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
+    }    
+    int bid = 0;
+    while (auctionPlayers.size() > 1)
+    {
+        std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
+        auctionPlayers.erase(auctionPlayers.begin());
+        spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
+        if (currentPlayer->getMoney() - 1 <= bid)
+        {
+            spdlog::info("{0} doesn't have enough money to bid and is out of the auction", currentPlayer->getName());
+        }
+        else
+        {
+            std::string message = "Do you want to bid on this property? [y/n]";
+            char answer = getYesNo(message);
+            if (answer == 'y')
+            {
+                bid = getNumber("How much do you want to bid?", bid+1, currentPlayer->getMoney() - 1);
+                spdlog::info("{0} is now the highest bidder with a bid of {1}€", currentPlayer->getName(), bid);
+                auctionPlayers.push_back(currentPlayer);
+            }
+            else
+            {
+                spdlog::info("{0} decided not to bid and is out of the auction", currentPlayer->getName());
+            }
+        }
+    }
+    std::shared_ptr<Player> winner = auctionPlayers.front();
+    spdlog::info("{0} won the auction with a bid of {1}€", winner->getName(), bid);
+    board->getPlayerManager()->transferMoneyFromTo(winner, nullptr, bid);
+    board->affectOwnership(winner, shared_from_this());
+    spdlog::info("{0} now owns this property", winner->getName());
 }
 
 PropertyRent Property::getNbBuildings() const
@@ -212,11 +254,10 @@ void Station::action(std::shared_ptr<BoardManager> board)
             return;
         }
         // Pay rent
-        // TODO: Implement the reset of a station that was owned by a now bankrupt player
         spdlog::info("This station is owned by {0}", getOwner()->getName());
         int rent = getRent()[getOwner()->getNbStationsOwned() - 1];
         spdlog::info("{0} owns {1} station(s)", getOwner()->getName(), getOwner()->getNbStationsOwned());
-        spdlog::info("{0} needs to pay {1} to {2}", player->getName(), rent, getOwner()->getName());
+        spdlog::info("{0} needs to pay {1}€ to {2}", player->getName(), rent, getOwner()->getName());
         board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
     }
     else
@@ -230,20 +271,62 @@ void Station::action(std::shared_ptr<BoardManager> board)
             if (player->getMoney() < getPrice())
             {
                 spdlog::info("You don't have enough money to buy this station");
+                auction(board);
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, shared_from_this());
+                board->affectOwnership(player, shared_from_this());
                 spdlog::info("You now own this this station");
                 player->setNbStationsOwned(player->getNbStationsOwned() + 1);
             }
         }
         else
         {
-            // Auction
+            auction(board);
         }
     }
+}
+
+void Station::auction(std::shared_ptr<BoardManager> board)
+{
+    spdlog::info("You decided not to buy this station and it will now be auctioned");
+    std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
+    for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
+    {
+        auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
+    }
+    int bid = 0;
+    while (auctionPlayers.size() > 1)
+    {
+        std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
+        auctionPlayers.erase(auctionPlayers.begin());
+        spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
+        if (currentPlayer->getMoney() - 1 <= bid)
+        {
+            spdlog::info("{0} doesn't have enough money to bid and is out of the auction", currentPlayer->getName());
+        }
+        else
+        {
+            std::string message = "Do you want to bid on this station? [y/n]";
+            char answer = getYesNo(message);
+            if (answer == 'y')
+            {
+                bid = getNumber("How much do you want to bid?", bid+1, currentPlayer->getMoney() - 1);
+                spdlog::info("{0} is now the highest bidder with a bid of {1}€", currentPlayer->getName(), bid);
+                auctionPlayers.push_back(currentPlayer);
+            }
+            else
+            {
+                spdlog::info("{0} decided not to bid and is out of the auction", currentPlayer->getName());
+            }
+        }
+    }
+    std::shared_ptr<Player> winner = auctionPlayers.front();
+    spdlog::info("{0} won the auction with a bid of {1}€", winner->getName(), bid);
+    board->getPlayerManager()->transferMoneyFromTo(winner, nullptr, bid);
+    board->affectOwnership(winner, shared_from_this());
+    spdlog::info("{0} now owns this station", winner->getName());
 }
 
 std::ostream& operator<<(std::ostream& os, const Station& station)
@@ -288,9 +371,9 @@ void Utility::action(std::shared_ptr<BoardManager> board)
         // Pay rent
         spdlog::info("This utility is owned by {0}", getOwner()->getName());
         std::pair<int, int> dicesValue = board->getCurrentDicesValue();
-        spdlog::info("The rent is ({0} + {1}) * {2}", dicesValue.first, dicesValue.second, (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10));
+        spdlog::info("The rent is ({0} + {1}) * {2}€", dicesValue.first, dicesValue.second, (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10));
         int rent = (dicesValue.first + dicesValue.second) * (getOwner()->getNbUtilitiesOwned() == 1 ? 4 : 10);
-        spdlog::info("{0} needs to pay {1} to {2}", player->getName(), rent, getOwner()->getName());
+        spdlog::info("{0} needs to pay {1}€ to {2}", player->getName(), rent, getOwner()->getName());
         board->getPlayerManager()->transferMoneyFromTo(player, getOwner(), rent);
     }
     else
@@ -304,20 +387,62 @@ void Utility::action(std::shared_ptr<BoardManager> board)
             if (player->getMoney() < getPrice())
             {
                 spdlog::info("You don't have enough money to buy this utility");
+                auction(board);
             }
             else
             {
                 board->getPlayerManager()->transferMoneyFromTo(player, nullptr, getPrice());
-                board->affectProperty(player, shared_from_this());
+                board->affectOwnership(player, shared_from_this());
                 spdlog::info("You now own this utility");
                 player->setNbUtilitiesOwned(player->getNbUtilitiesOwned() + 1);
             }
         }
         else
         {
-            // Auction
+            auction(board);
         }
     }
+}
+
+void Utility::auction(std::shared_ptr<BoardManager> board)
+{
+    spdlog::info("You decided not to buy this utility and it will now be auctioned");
+    std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
+    for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
+    {
+        auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
+    }    
+    int bid = 0;
+    while (auctionPlayers.size() > 1)
+    {
+        std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
+        auctionPlayers.erase(auctionPlayers.begin());
+        spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
+        if (currentPlayer->getMoney() - 1 <= bid)
+        {
+            spdlog::info("{0} doesn't have enough money to bid and is out of the auction", currentPlayer->getName());
+        }
+        else
+        {
+            std::string message = "Do you want to bid on this utility? [y/n]";
+            char answer = getYesNo(message);
+            if (answer == 'y')
+            {
+                bid = getNumber("How much do you want to bid?", bid+1, currentPlayer->getMoney() - 1);
+                spdlog::info("{0} is now the highest bidder with a bid of {1}€", currentPlayer->getName(), bid);
+                auctionPlayers.push_back(currentPlayer);
+            }
+            else
+            {
+                spdlog::info("{0} decided not to bid and is out of the auction", currentPlayer->getName());
+            }
+        }
+    }
+    std::shared_ptr<Player> winner = auctionPlayers.front();
+    spdlog::info("{0} won the auction with a bid of {1}€", winner->getName(), bid);
+    board->getPlayerManager()->transferMoneyFromTo(winner, nullptr, bid);
+    board->affectOwnership(winner, shared_from_this());
+    spdlog::info("{0} now owns this utility", winner->getName());
 }
 
 std::ostream& operator<<(std::ostream& os, const Utility& utility)
@@ -346,7 +471,7 @@ int Tax::getAmount() const
 void Tax::action(std::shared_ptr<BoardManager> board)
 {
     std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
-    spdlog::info("{0} needs to pay {1} to the bank", player->getName(), amount);
+    spdlog::info("{0} needs to pay {1}€ to the bank", player->getName(), amount);
     board->getPlayerManager()->transferMoneyFromTo(player, nullptr, amount);
 
 }
