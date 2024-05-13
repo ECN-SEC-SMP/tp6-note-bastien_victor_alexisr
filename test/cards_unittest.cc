@@ -1,11 +1,6 @@
 /**
  * @file cards_unittest.cc
- * @author Bastien, Victor, AlexisR 
- * @brief Unit tests for the cards and deck classes
- * @version 0.1
- * @date 2024-03-25
- * 
- * @copyright Copyright (c) 2024
+ * @brief Unit tests for the cards classes
  * 
  */
 

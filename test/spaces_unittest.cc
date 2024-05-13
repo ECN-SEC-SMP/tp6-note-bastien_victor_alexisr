@@ -1,12 +1,9 @@
 /**
  * @file test_spaces.cpp
- * @author Bastien, Victor, AlexisR 
- * @brief  Test file for the spaces classes
- * @version 0.1
- * @date 2024-03-24
+ * @brief Unit tests for the spaces classes
  * 
- * @copyright Copyright (c) 2024
- * 
+ * This file contains unit tests for the different types of spaces in a Monopoly game.
+ * It tests the creation and getters of each type of space, including properties, stations, utilities, taxes, jail, go to jail, free parking, go, community chest, and chance.
  */
 
 #include <gtest/gtest.h>

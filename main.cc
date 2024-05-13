@@ -1,11 +1,6 @@
 /**
- * @file main.cpp
- * @author Bastien, Victor, AlexisR 
- * @brief Main file for the project
- * @version 0.1
- * @date 2024-03-22
- * 
- * @copyright Copyright (c) 2024
+ * @file main.cc
+ * @brief Main file for the Monopoly game
  * 
  */
 
@@ -16,6 +11,10 @@
 #include "spdlog/sinks/basic_file_sink.h" 
 #include "spdlog/sinks/stdout_color_sinks.h"
 
+/**
+ * @brief Create the Monopoly board
+ * @return A vector of shared pointers to the spaces on the board
+ */
 std::vector<std::shared_ptr<Space>> createBoard()
 {
     std::vector<std::shared_ptr<Space>> board;
@@ -62,6 +61,10 @@ std::vector<std::shared_ptr<Space>> createBoard()
     return board;
 }
 
+/**
+ * @brief Create the Community Chest deck
+ * @return A vector of unique pointers to the Community Chest cards
+ */
 std::vector<std::unique_ptr<CommunityChestCard>> createCommunityChestDeck() {
     std::vector<std::unique_ptr<CommunityChestCard>> deck;
 
@@ -187,6 +190,10 @@ std::vector<std::unique_ptr<CommunityChestCard>> createCommunityChestDeck() {
     return deck;
 }
 
+/**
+ * @brief Create the Chance deck
+ * @return A vector of unique pointers to the Chance cards
+ */
 std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
 {
     std::vector<std::unique_ptr<ChanceCard>> deck;
@@ -319,8 +326,13 @@ std::vector<std::unique_ptr<ChanceCard>> createChanceDeck()
 }
 
 
+/**
+ * @brief Main function
+ * @return 0 if the program runs successfully
+ */
 int main()
 {
+    // Set up the logger (logging level and output format)
     try 
     {       
         auto console_logger = spdlog::stdout_color_mt("console");

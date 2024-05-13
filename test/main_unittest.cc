@@ -1,3 +1,10 @@
+/**
+ * @file main_unittest.cc
+ * @brief Main file for the unit tests
+ * 
+ * This file contains the main function for running the unit tests. It sets up the logger, initializes the Google Test framework, and runs all the tests.
+ */
+
 #include <gtest/gtest.h>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h" 
@@ -6,8 +13,17 @@
 #include <iomanip>
 
 
+/**
+ * @brief Main function for running the unit tests
+ * 
+ * This function sets up the logger, initializes the Google Test framework, and runs all the tests.
+ * 
+ * @param argc Number of command-line arguments
+ * @param argv Command-line arguments
+ * @return int 0 if all tests pass, 1 otherwise
+ */
 int main(int argc, char **argv) {
-    //Logger setup
+    // For testing purposes, we will log to a file instead of the console
     try
     {    
         auto now = std::chrono::system_clock::now();

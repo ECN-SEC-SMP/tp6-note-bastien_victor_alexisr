@@ -1,12 +1,10 @@
 /**
  * @file spaces.cc
- * @author Bastien, Victor, AlexisR 
- * @brief Class handling the spaces of the board. All types of spaces inherit from this class
- * @version 0.1
- * @date 2024-03-23
+ * @brief Implementation of the Space, BuyableSpace, Property, Station, Utility, Tax, Jail, GoToJail, FreeParking, Go, CommunityChest, and Chance classes
  * 
- * @copyright Copyright (c) 2024
- * 
+ * This file contains the implementation of various classes related to the spaces in a Monopoly game.
+ * The classes include Space, BuyableSpace, Property, Station, Utility, Tax, Jail, GoToJail, FreeParking, Go, CommunityChest, and Chance.
+ * These classes define the behavior and properties of different types of spaces on the game board.
  */
 
 #include "spaces.h"
@@ -111,7 +109,7 @@ void Property::action(std::shared_ptr<BoardManager> board)
             spdlog::info("You own this property");
             return;
         }
-        // TODO: Implement the reset of a property that was owned by a now bankrupt player
+        // Make the player pay rent
         spdlog::info("This property is owned by {0}", getOwner()->getName());
         int rent = getRent()[static_cast<int>(nbBuildings)];
         spdlog::info("{0} needs to pay {1}€ to {2}", player->getName(), rent, getOwner()->getName());
@@ -120,6 +118,7 @@ void Property::action(std::shared_ptr<BoardManager> board)
     }
     else
     {
+        // Offer the player to buy the property or auction it
         spdlog::info("This property is not owned");
         logObject(*this);     
         std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + "€ ? [y/n]";
@@ -148,14 +147,17 @@ void Property::action(std::shared_ptr<BoardManager> board)
 void Property::auction(std::shared_ptr<BoardManager> board)
 {
     spdlog::info("You decided not to buy this property and it will now be auctioned");
+    // Get all players in the game
     std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
     for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
     {
         auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
     }    
     int bid = 0;
+    // Start the auction
     while (auctionPlayers.size() > 1)
     {
+        // Make the first player bid (remove him from the list and add him back at the end if he bids)
         std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
         auctionPlayers.erase(auctionPlayers.begin());
         spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
@@ -262,6 +264,7 @@ void Station::action(std::shared_ptr<BoardManager> board)
     }
     else
     {
+        // Offer the player to buy the station or auction it
         spdlog::info("This station is not owned");
         logObject(*this);
         std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + "€ ? [y/n]";
@@ -291,14 +294,17 @@ void Station::action(std::shared_ptr<BoardManager> board)
 void Station::auction(std::shared_ptr<BoardManager> board)
 {
     spdlog::info("You decided not to buy this station and it will now be auctioned");
+    // Get all players in the game
     std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
     for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
     {
         auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
     }
     int bid = 0;
+    // Start the auction
     while (auctionPlayers.size() > 1)
     {
+        // Make the first player bid (remove him from the list and add him back at the end if he bids)
         std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
         auctionPlayers.erase(auctionPlayers.begin());
         spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
@@ -326,6 +332,7 @@ void Station::auction(std::shared_ptr<BoardManager> board)
     spdlog::info("{0} won the auction with a bid of {1}€", winner->getName(), bid);
     board->getPlayerManager()->transferMoneyFromTo(winner, nullptr, bid);
     board->affectOwnership(winner, shared_from_this());
+    winner->setNbStationsOwned(winner->getNbStationsOwned() + 1);
     spdlog::info("{0} now owns this station", winner->getName());
 }
 
@@ -378,6 +385,7 @@ void Utility::action(std::shared_ptr<BoardManager> board)
     }
     else
     {
+        // Offer the player to buy the utility or auction it
         spdlog::info("This utility is not owned");
         logObject(*this);
         std::string message = "Do you want to buy it for " + std::to_string(getPrice()) + "€ ? [y/n]";
@@ -407,14 +415,17 @@ void Utility::action(std::shared_ptr<BoardManager> board)
 void Utility::auction(std::shared_ptr<BoardManager> board)
 {
     spdlog::info("You decided not to buy this utility and it will now be auctioned");
+    // Get all players in the game
     std::vector<std::shared_ptr<Player>> auctionPlayers(board->getPlayerManager()->getNbPlayers());
     for (int i = 0; i < board->getPlayerManager()->getNbPlayers(); i++)
     {
         auctionPlayers[i] = board->getPlayerManager()->getPlayer(i);
     }    
     int bid = 0;
+    // Start the auction
     while (auctionPlayers.size() > 1)
     {
+        // Make the first player bid (remove him from the list and add him back at the end if he bids)
         std::shared_ptr<Player> currentPlayer = auctionPlayers.front();
         auctionPlayers.erase(auctionPlayers.begin());
         spdlog::info("It is {0}'s turn to bid.", currentPlayer->getName());
@@ -442,6 +453,7 @@ void Utility::auction(std::shared_ptr<BoardManager> board)
     spdlog::info("{0} won the auction with a bid of {1}€", winner->getName(), bid);
     board->getPlayerManager()->transferMoneyFromTo(winner, nullptr, bid);
     board->affectOwnership(winner, shared_from_this());
+    winner->setNbUtilitiesOwned(winner->getNbUtilitiesOwned() + 1);
     spdlog::info("{0} now owns this utility", winner->getName());
 }
 
@@ -497,6 +509,7 @@ void Jail::action(std::shared_ptr<BoardManager> board)
     std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
     if (player->getRemainingTurnsInJail() > 0)
     {
+        // If the player has a Get Out of Jail Free card, he can use it
         spdlog::info("You are stuck in jail for {0} turn(s)", player->getRemainingTurnsInJail());
         if (player->getHasChanceGOJFC() || player->getHasCommunityChestGOJFC())
         {
@@ -519,6 +532,7 @@ void Jail::action(std::shared_ptr<BoardManager> board)
                 return;
             }
         }
+        // Offer the player to pay 50 to get out of jail or roll the dice
         std::string message = "Do you want to pay 50 to get out of jail? [y/n]";
         char answer = getYesNo(message);
         if (answer == 'y')
@@ -577,7 +591,7 @@ void GoToJail::action(std::shared_ptr<BoardManager> board)
 {
     std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
     spdlog::info("You are going to jail");
-    player->setRemainingTurnsInJail(3); // TODO: Fix the fact that it seems like the counter is not working
+    player->setRemainingTurnsInJail(3);
     board->movePlayer(20);
 }
 
@@ -617,6 +631,7 @@ Go::~Go()
 
 void Go::action(std::shared_ptr<BoardManager> board)
 {
+    // Give an extra 200 to the player who lands exactly on the Go space
     std::shared_ptr<Player> player = board->getPlayerManager()->getCurrentPlayer();
     spdlog::info("{0} landed exactly on the Go space and earned an extra 200", player->getName());
     board->getPlayerManager()->transferMoneyFromTo(nullptr, player, 200);

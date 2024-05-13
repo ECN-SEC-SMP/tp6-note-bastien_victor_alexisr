@@ -1,22 +1,29 @@
+
+
 /**
- * @file input_manager.cc
- * @author Bastien, Victor, AlexisR 
- * @brief File for managing user inputs (getting manual inputs, and simulating inputs)
- * @version 0.1
- * @date 2024-04-20
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @file iomanager.cc
+ * @brief Implementation of the I/O Manager class.
  */
 
 #include "iomanager.h"
 #include <random>
 
 #ifdef TEST
+    /**
+     * @brief Simulates user input for testing purposes.
+     * @param message The message to display to the user.
+     */
     void getEnter(std::string message){
         spdlog::info(message);
     }
 
+    /**
+     * @brief Simulates user input for testing purposes and returns a random number within the specified range.
+     * @param message The message to display to the user.
+     * @param min The minimum value of the random number.
+     * @param max The maximum value of the random number.
+     * @return A random number within the specified range.
+     */
     int getNumber(std::string message, int min, int max){
         spdlog::info(message);
         std::uniform_int_distribution<int> distribution(min, max);
@@ -26,6 +33,12 @@
         return randomNum;
     }
 
+    /**
+     * @brief Simulates user input for testing purposes and returns a random string from the given vector of valid strings.
+     * @param message The message to display to the user.
+     * @param validStrings The vector of valid strings.
+     * @return A random string from the vector of valid strings.
+     */
     std::string getString(std::string message, const std::vector<std::string>& validStrings){
         spdlog::info(message);
         if (message.find("name") != std::string::npos) {
@@ -45,6 +58,11 @@
         return "testString";
     }
 
+    /**
+     * @brief Simulates user input for testing purposes and returns 'y' or 'n' randomly.
+     * @param message The message to display to the user.
+     * @return 'y' or 'n' randomly.
+     */
     char getYesNo(std::string message){
         spdlog::info(message);
         std::uniform_int_distribution<int> distribution(0, 1);
@@ -54,6 +72,10 @@
         return randomNum == 0 ? 'y' : 'n';
     }
 #else
+    /**
+     * @brief Gets user input from the console.
+     * @param message The message to display to the user.
+     */
     void getEnter(std::string message){
         spdlog::info(message);
         std::string input;
@@ -63,6 +85,13 @@
         }
     }
 
+    /**
+     * @brief Gets a number from the user within the specified range.
+     * @param message The message to display to the user.
+     * @param min The minimum value of the number.
+     * @param max The maximum value of the number.
+     * @return The number entered by the user.
+     */
     int getNumber(std::string message, int min, int max){
         int number;
         std::string input;
@@ -84,6 +113,12 @@
         return number;
     }
 
+    /**
+     * @brief Gets a string from the user.
+     * @param message The message to display to the user.
+     * @param validStrings The vector of valid strings. If empty, any non-empty string is considered valid.
+     * @return The string entered by the user.
+     */
     std::string getString(std::string message, const std::vector<std::string>& validStrings) {
         std::string str;
         bool isValid = false;
@@ -116,6 +151,11 @@
         return str;
     }
 
+    /**
+     * @brief Gets a 'y' or 'n' answer from the user.
+     * @param message The message to display to the user.
+     * @return 'y' or 'n' entered by the user.
+     */
     char getYesNo(std::string message){
         std::string input;
         char answer;

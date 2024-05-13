@@ -1,11 +1,10 @@
 /**
  * @file player.cc
- * @author Bastien, Victor, AlexisR 
- * @brief Class handling the player
- * @version 0.1
- * @date 2024-03-24
+ * @brief Implementation file for the Player class
  * 
- * @copyright Copyright (c) 2024
+ * This file contains the implementation of the Player class, which represents a player in a game.
+ * The Player class provides methods to get and set the player's position, money, remaining turns in jail,
+ * number of stations and utilities owned, and whether the player has a chance or community chest get out of jail free card.
  * 
  */
 

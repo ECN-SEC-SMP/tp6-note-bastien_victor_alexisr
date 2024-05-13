@@ -1,11 +1,9 @@
 /**
  * @file cards.cc
- * @author Bastien, Victor, AlexisR 
- * @brief Class handling the cards
- * @version 0.1
- * @date 2024-03-25
+ * @brief Implementation file for the Card, CommunityChestCard, and ChanceCard classes.
  * 
- * @copyright Copyright (c) 2024
+ * This file contains the implementation of the Card, CommunityChestCard, and ChanceCard classes.
+ * These classes are used to handle the Community Chest and Chance cards in a game.
  * 
  */
 
@@ -22,12 +20,11 @@ std::string Card::getDescription() const
     return description;
 }
 
-
-
 CommunityChestCard::CommunityChestCard(std::string _description, std::function<void(std::shared_ptr<BoardManager>)> _action) : Card(_description)  
 {
     _actionFunction = _action;  
 }
+
 CommunityChestCard::~CommunityChestCard() {}
 
 void CommunityChestCard::action(std::shared_ptr<BoardManager> board)
@@ -35,7 +32,7 @@ void CommunityChestCard::action(std::shared_ptr<BoardManager> board)
     if (_actionFunction)
     {
         spdlog::info("Community Chest Card: {0}", getDescription());
-        _actionFunction(board);
+        _actionFunction(board); // Call the action function associated with the card
     }
 }
 
@@ -58,7 +55,7 @@ void ChanceCard::action(std::shared_ptr<BoardManager>  board)
     if (_actionFunction)
     {
         spdlog::info("Chance Card: {0}", getDescription());
-        _actionFunction(board);
+        _actionFunction(board); // Call the action function associated with the card
     }
 }
 

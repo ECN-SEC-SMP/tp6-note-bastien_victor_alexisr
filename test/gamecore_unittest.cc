@@ -1,11 +1,6 @@
 /**
  * @file gamecore_unittest.cc
- * @author Bastien, Victor, AlexisR 
  * @brief Unit tests for the gamecore
- * @version 0.1
- * @date 2024-03-25
- * 
- * @copyright Copyright (c) 2024
  * 
  */
 
@@ -13,6 +8,12 @@
 #include "../sources/gamecore.h"
 #include "../utils/iomanager.h"
 
+/**
+ * @brief Test case for the Dice class roll.
+ * 
+ * This test verifies that the roll of a dice is within the expected range.
+ * If the roll is not within the expected range, an assertion failure is triggered.
+ */
 TEST(Dice, Roll)
 {
     Dice dice;
@@ -22,8 +23,12 @@ TEST(Dice, Roll)
 }
 
 /**
- * @brief Test the distribution of the sum of two dice rolls
- * It rolls the dice a large number of times and checks if the distribution is close to the expected one
+ * @brief Test case for the Dice class roll distribution.
+ * 
+ * This test verifies that the roll distribution of two dice is as expected.
+ * It rolls the dice a specified number of times and checks the frequencies of the outcomes.
+ * The expected frequencies are compared with the observed frequencies within a tolerance.
+ * If any outcome differs significantly, an assertion failure is triggered.
  */
 TEST(Dice, RollDistribution)
 {
@@ -51,6 +56,11 @@ TEST(Dice, RollDistribution)
 
 }
 
+/**
+ * @brief Test case for a full game.
+ * 
+ * This test starts a game with a full board, a random number of players and plays until there is a winner or 1000 turns have passed.
+ */
 TEST(GameCore, StartGame)
 {
     std::vector<std::shared_ptr<Space>> spaces;
